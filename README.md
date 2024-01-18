@@ -12,7 +12,7 @@ Setup
 Install the plugin in your RDMO virtual environment using pip (directly from GitHub):
 
 ```bash
-pip install git+https://github.com/rdmorganiser/rdmo-gnd
+pip install git+https://github.com/rdmorganiser/rdmo-plugins-gnd
 ```
 
 Add the `rdmo_gnd` app to `INSTALLED_APPS` and the plugin to `OPTIONSET_PROVIDERS` in `config/settings/local.py`:
