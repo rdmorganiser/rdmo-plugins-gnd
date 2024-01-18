@@ -1,5 +1,5 @@
-rdmo-gnd
-========
+rdmo-plugins-gnd
+================
 
 This plugin implements dynamic option set, that queries the API for the Gemeinsame Normdatei at https://lobid.org/gnd.
 
