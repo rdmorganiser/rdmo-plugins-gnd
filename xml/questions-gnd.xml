@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdmo xmlns:dc="http://purl.org/dc/elements/1.1/" created="2025-01-17T11:43:51.206569+01:00" version="2.2.2">
+	<catalog dc:uri="https://rdmorganiser.github.io/terms/questions/gnd">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd</uri_path>
+		<dc:comment/>
+		<order>0</order>
+		<title lang="en">GND Example Catalog</title>
+		<help lang="en"/>
+		<title lang="de">GND Beispielkatalog</title>
+		<help lang="de"/>
+		<title lang="fr"/>
+		<help lang="fr"/>
+		<title lang="it"/>
+		<help lang="it"/>
+		<title lang="es"/>
+		<help lang="es"/>
+		<sections>
+			<section dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general" order="1"/>
+		</sections>
+	</catalog>
+	<section dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general</uri_path>
+		<dc:comment/>
+		<title lang="en">General</title>
+		<short_title lang="en"/>
+		<title lang="de">Allgemein</title>
+		<short_title lang="de"/>
+		<title lang="fr"/>
+		<short_title lang="fr"/>
+		<title lang="it"/>
+		<short_title lang="it"/>
+		<title lang="es"/>
+		<short_title lang="es"/>
+		<pages>
+			<page dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords" order="1"/>
+		</pages>
+	</section>
+	<page dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords</uri_path>
+		<dc:comment/>
+		<attribute/>
+		<is_collection>False</is_collection>
+		<title lang="en">Keywords</title>
+		<short_title lang="en"/>
+		<help lang="en"/>
+		<verbose_name lang="en"/>
+		<title lang="de">Schlagworte</title>
+		<short_title lang="de"/>
+		<help lang="de"/>
+		<verbose_name lang="de"/>
+		<title lang="fr"/>
+		<short_title lang="fr"/>
+		<help lang="fr"/>
+		<verbose_name lang="fr"/>
+		<title lang="it"/>
+		<short_title lang="it"/>
+		<help lang="it"/>
+		<verbose_name lang="it"/>
+		<title lang="es"/>
+		<short_title lang="es"/>
+		<help lang="es"/>
+		<verbose_name lang="es"/>
+		<questionsets/>
+		<questions>
+			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd" order="1"/>
+			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/keyword" order="2"/>
+		</questions>
+		<conditions/>
+	</page>
+	<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords/gnd</uri_path>
+		<dc:comment/>
+		<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd"/>
+		<is_collection>False</is_collection>
+		<is_optional>False</is_optional>
+		<help lang="en"/>
+		<text lang="en">GND</text>
+		<default_text lang="en"/>
+		<verbose_name lang="en"/>
+		<help lang="de"/>
+		<text lang="de">GND</text>
+		<default_text lang="de"/>
+		<verbose_name lang="de"/>
+		<help lang="fr"/>
+		<text lang="fr"/>
+		<default_text lang="fr"/>
+		<verbose_name lang="fr"/>
+		<help lang="it"/>
+		<text lang="it"/>
+		<default_text lang="it"/>
+		<verbose_name lang="it"/>
+		<help lang="es"/>
+		<text lang="es"/>
+		<default_text lang="es"/>
+		<verbose_name lang="es"/>
+		<default_option/>
+		<default_external_id/>
+		<widget_type>autocomplete</widget_type>
+		<value_type>text</value_type>
+		<maximum/>
+		<minimum/>
+		<step/>
+		<unit/>
+		<width/>
+		<optionsets>
+			<optionset dc:uri="http://example.com/terms/options/gnd"/>
+		</optionsets>
+		<conditions/>
+	</question>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>gnd</key>
+		<path>project/research_question/keywords/gnd</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords"/>
+	</attribute>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>keywords</key>
+		<path>project/research_question/keywords</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question"/>
+	</attribute>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>research_question</key>
+		<path>project/research_question</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project"/>
+	</attribute>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>project</key>
+		<path>project</path>
+		<dc:comment/>
+		<parent/>
+	</attribute>
+	<optionset dc:uri="http://example.com/terms/options/gnd">
+		<uri_prefix>http://example.com/terms</uri_prefix>
+		<uri_path>gnd</uri_path>
+		<dc:comment/>
+		<provider_key>gnd</provider_key>
+		<options/>
+		<conditions/>
+	</optionset>
+	<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/keyword">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords/keyword</uri_path>
+		<dc:comment/>
+		<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords"/>
+		<is_collection>False</is_collection>
+		<is_optional>False</is_optional>
+		<help lang="en"/>
+		<text lang="en">Name</text>
+		<default_text lang="en"/>
+		<verbose_name lang="en"/>
+		<help lang="de"/>
+		<text lang="de">Name</text>
+		<default_text lang="de"/>
+		<verbose_name lang="de"/>
+		<help lang="fr"/>
+		<text lang="fr"/>
+		<default_text lang="fr"/>
+		<verbose_name lang="fr"/>
+		<help lang="it"/>
+		<text lang="it"/>
+		<default_text lang="it"/>
+		<verbose_name lang="it"/>
+		<help lang="es"/>
+		<text lang="es"/>
+		<default_text lang="es"/>
+		<verbose_name lang="es"/>
+		<default_option/>
+		<default_external_id/>
+		<widget_type>text</widget_type>
+		<value_type>text</value_type>
+		<maximum/>
+		<minimum/>
+		<step/>
+		<unit/>
+		<width/>
+		<optionsets/>
+		<conditions/>
+	</question>
+</rdmo>
