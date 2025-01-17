@@ -38,6 +38,14 @@ dynamic = ["version"]
 [project.urls]
 repository = "https://github.com/rdmorganiser/rdmo-plugins-gnd"
 
+[project.optional-dependencies]
+dev = [
+    "build",
+    "pre-commit",
+    "ruff",
+    "twine",
+]
+
 [tool.setuptools]
 packages = ["rdmo_gnd"]
 

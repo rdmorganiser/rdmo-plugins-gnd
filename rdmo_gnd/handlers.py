@@ -5,44 +5,51 @@ from django.dispatch import receiver
 import dpath
 import requests
 
+from rdmo.domain.models import Attribute
 from rdmo.projects.models import Value
 
 
 @receiver(post_save, sender=Value)
-def post_save_project_values(sender, **kwargs):
+def gnd_handler(sender, instance=None, **kwargs):
+    # check for ROR_PROVIDER_MAP
+    if not getattr(settings, 'GND_PROVIDER_MAP', None):
+        return
+
     # check if we are importing fixtures
     if kwargs.get('raw'):
         return
 
-    # get the attribute map from the settings
-    attribute_map_list = getattr(settings, 'GND_PROVIDER_MAP', None)
-    if not attribute_map_list:
+    # check if this value instance has an external_id
+    if not instance.external_id:
         return
 
-    instance = kwargs.get('instance')
-    if instance and instance.external_id:
-        for attribute_map in attribute_map_list:
-            gnd_identifier = attribute_map.pop('gndIdentifier', None)
-            if instance.attribute.uri == gnd_identifier:
-                try:
-                    url = getattr(settings, 'GND_PROVIDER_URL', 'https://lobid.org/gnd').rstrip('/')
-                    headers = getattr(settings, 'GND_PROVIDER_HEADERS', {})
-                    response = requests.get(f'{url}/{instance.external_id}', headers=headers)
-                    response.raise_for_status()
+    # get the attribute map from the settings
+    for attribute_map in settings.GND_PROVIDER_MAP:
+        if 'gndIdentifier' in attribute_map and instance.attribute.uri == attribute_map['gndIdentifier']:
+            try:
+                url = getattr(settings, 'GND_PROVIDER_URL', 'https://lobid.org/gnd').rstrip('/')
+                headers = getattr(settings, 'GND_PROVIDER_HEADERS', {})
 
-                    data = response.json()
+                response = requests.get(f'{url}/{instance.external_id}', headers=headers)
+                response.raise_for_status()
 
-                    for gnd_path, rdmo_uri in attribute_map.items():
-                        try:
-                            text = dpath.get(data, gnd_path)
-                        except KeyError:
-                            pass
-                        else:
-                            Value.objects.update_or_create(
-                                project=instance.project,
-                                attribute__uri=rdmo_uri,
-                                defaults={'text': text}
-                            )
+                data = response.json()
+            except (requests.exceptions.RequestException, requests.exceptions.HTTPError):
+                return
 
-                except (requests.exceptions.RequestException, requests.exceptions.HTTPError):
-                    pass
+            for gnd_path, rdmo_uri in attribute_map.items():
+                if rdmo_uri != instance.attribute.uri:
+                    try:
+                        text = dpath.get(data, gnd_path)
+                    except KeyError:
+                        pass
+                    else:
+                        Value.objects.update_or_create(
+                            project=instance.project,
+                            attribute=Attribute.objects.get(uri=rdmo_uri),
+                            set_prefix=instance.set_prefix,
+                            set_index=instance.set_index,
+                            defaults={
+                                'text': text
+                            }
+                        )
