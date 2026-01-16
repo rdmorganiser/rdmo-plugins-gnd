@@ -38,7 +38,9 @@ class GNDProvider(Provider):
         return []
 
     def get_text(self, item):
+        gndId = item['id']
         gndIdentifier = item['gndIdentifier']
+        gndIdentifierLink = f'<a href="{gndId}">{gndIdentifier}</a>'
         preferredName = item['preferredName']
 
         try:
@@ -47,9 +49,9 @@ class GNDProvider(Provider):
             professionOrOccupation = None
 
         if professionOrOccupation is None:
-            return f'{preferredName} [{gndIdentifier}]'
+            return f'{preferredName} [{gndIdentifierLink}]'
         else:
-            return f'{preferredName} | {professionOrOccupation} [{gndIdentifier}]'
+            return f'{preferredName} | {professionOrOccupation} [{gndIdentifierLink}]'
 
     def get_search(self, search):
         # reverse get_text to perform the search, remove everything after | or [
