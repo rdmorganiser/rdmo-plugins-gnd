@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 import dpath
@@ -7,10 +6,12 @@ import requests
 
 from rdmo.domain.models import Attribute
 from rdmo.projects.models import Value
+from rdmo.projects.signals import value_created, value_updated
 
 
-@receiver(post_save, sender=Value)
-def gnd_handler(sender, instance=None, **kwargs):
+@receiver(value_created, sender=Value)
+@receiver(value_updated, sender=Value)
+def gnd_handler(signal, sender, instance=None, **kwargs):
     # check for ROR_PROVIDER_MAP
     if not getattr(settings, 'GND_PROVIDER_MAP', None):
         return
@@ -46,6 +47,7 @@ def gnd_handler(sender, instance=None, **kwargs):
                     else:
                         Value.objects.update_or_create(
                             project=instance.project,
+                            snapshot=None,
                             attribute=Attribute.objects.get(uri=rdmo_uri),
                             set_prefix=instance.set_prefix,
                             set_index=instance.set_index,
