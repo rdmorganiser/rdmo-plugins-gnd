@@ -15,15 +15,12 @@ class GNDProvider(Provider):
         if search:
             url = getattr(settings, 'GND_PROVIDER_URL', 'https://lobid.org/gnd').rstrip('/')
             headers = getattr(settings, 'GND_PROVIDER_HEADERS', {})
-
-            response = requests.get(
-                f'{url}/search',
-                params={
-                    'q': self.get_search(search),
-                    'format': 'json',
-                },
-                headers=headers,
-            )
+            params = {
+                'q': self.get_search(search),
+                'format': 'json',
+                **getattr(settings, 'GND_PARAMS', {}),
+            }
+            response = requests.get(f'{url}/search', params=params, headers=headers)
 
             try:
                 data = response.json()
