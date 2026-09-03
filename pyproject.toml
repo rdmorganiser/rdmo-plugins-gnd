@@ -57,6 +57,7 @@ line-length = 120
 
 [tool.ruff.format]
 quote-style = "single"
+exclude = ["*.md"]
 
 [tool.ruff.lint]
 select = [
