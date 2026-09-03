@@ -52,6 +52,6 @@ def gnd_handler(signal, sender, instance=None, **kwargs):
                             set_prefix=instance.set_prefix,
                             set_index=instance.set_index,
                             defaults={
-                                'text': text
-                            }
+                                'text': text,
+                            },
                         )

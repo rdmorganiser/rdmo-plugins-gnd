@@ -8,7 +8,6 @@ from rdmo.options.providers import Provider
 
 
 class GNDProvider(Provider):
-
     search = True
     refresh = True
 
@@ -16,10 +15,12 @@ class GNDProvider(Provider):
         if search:
             url = getattr(settings, 'GND_PROVIDER_URL', 'https://lobid.org/gnd').rstrip('/')
             headers = getattr(settings, 'GND_PROVIDER_HEADERS', {})
-
-            response = requests.get(f'{url}/search', params={
-                'q': self.get_search(search), 'format': 'json'
-            }, headers=headers)
+            params = {
+                'q': self.get_search(search),
+                'format': 'json',
+                **getattr(settings, 'GND_PARAMS', {}),
+            }
+            response = requests.get(f'{url}/search', params=params, headers=headers)
 
             try:
                 data = response.json()
@@ -27,12 +28,7 @@ class GNDProvider(Provider):
                 pass
             else:
                 if data['totalItems']:
-                    return [
-                        {
-                            'id': item['gndIdentifier'],
-                            'text': self.get_text(item)
-                        } for item in data['member']
-                    ]
+                    return [{'id': item['gndIdentifier'], 'text': self.get_text(item)} for item in data['member']]
 
         # return an empty list by default
         return []
