@@ -42,6 +42,14 @@ GND_PROVIDER_MAP = [
 
 In this case, a change to the identifier of a coordinator (`https://rdmorganiser.github.io/terms/domain/project/coordination/gnd`) will update their name (`https://rdmorganiser.github.io/terms/domain/project/coordination/name`) automatically. The value will be taken from the `preferredName` field of the response from the API for the selected `gndIdentifier`. `GND_PROVIDER_MAP` is a list of mappings, since multiple GND identifiers could be used and should update different other values.
 
+Additional parameters can be provided using `GND_PARAMS`:
+
+```python
+GND_PARAMS = {
+    'filter': '+(type:PlaceOrGeographicName)'
+}
+```
+
 [lobid's policy](http://lobid.org/usage-policy/) asks to add a custom `User-Agent` to your requests so that they can perform statistical analyses and, if you add an email address, might contact you. This can be done by adding the following to your settings.
 
 ```python
