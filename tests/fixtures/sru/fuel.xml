@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DNB SRU RDFxml response, reduced to two records and relevant fields.
+     Verified 2026-10-20: dnb.sw = "fuel" and dnb.bbg = Ts*, total 31.
+     https://services.dnb.de/sru/authorities ; GND record data: CC0. -->
+<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">
+  <version>1.1</version>
+  <numberOfRecords>31</numberOfRecords>
+  <records>
+    <record>
+      <recordSchema>RDFxml</recordSchema>
+      <recordPacking>xml</recordPacking>
+      <recordData>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                 xmlns:gndo="https://d-nb.info/standards/elementset/gnd#"
+                 xmlns:wdrs="http://www.w3.org/2007/05/powder-s#">
+          <rdf:Description rdf:about="https://d-nb.info/gnd/4132517-5">
+            <rdf:type rdf:resource="https://d-nb.info/standards/elementset/gnd#SubjectHeadingSensoStricto"/>
+            <wdrs:describedby>
+              <rdf:Description rdf:about="https://d-nb.info/gnd/4132517-5/about"/>
+            </wdrs:describedby>
+            <gndo:gndIdentifier>4132517-5</gndo:gndIdentifier>
+            <gndo:preferredNameForTheSubjectHeading>Betriebsstoff</gndo:preferredNameForTheSubjectHeading>
+          </rdf:Description>
+        </rdf:RDF>
+      </recordData>
+      <recordPosition>1</recordPosition>
+    </record>
+    <record>
+      <recordSchema>RDFxml</recordSchema>
+      <recordPacking>xml</recordPacking>
+      <recordData>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                 xmlns:gndo="https://d-nb.info/standards/elementset/gnd#">
+          <rdf:Description rdf:about="https://d-nb.info/gnd/4008186-2">
+            <rdf:type rdf:resource="https://d-nb.info/standards/elementset/gnd#SubjectHeadingSensoStricto"/>
+            <gndo:gndIdentifier>4008186-2</gndo:gndIdentifier>
+            <gndo:preferredNameForTheSubjectHeading>Brennstoff</gndo:preferredNameForTheSubjectHeading>
+          </rdf:Description>
+        </rdf:RDF>
+      </recordData>
+      <recordPosition>7</recordPosition>
+    </record>
+  </records>
+</searchRetrieveResponse>

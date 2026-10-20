@@ -12,7 +12,7 @@ maintainers = [
 ]
 description = "Plugin for RDMO to query the Gemeinsame Normdatei"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "AUTHORS"]
 classifiers = [
@@ -42,6 +42,10 @@ repository = "https://github.com/rdmorganiser/rdmo-plugins-gnd"
 dev = [
     "build",
     "pre-commit",
+    "pytest>=9.0,<10.0",
+    "pytest-django>=4.11,<5.0",
+    "pytest-mock>=3.15,<4.0",
+    "rdmo",
     "ruff",
     "twine",
 ]
@@ -53,6 +57,7 @@ source = "vcs"
 packages = ["rdmo_gnd"]
 
 [tool.ruff]
+target-version = "py311"
 line-length = 120
 
 [tool.ruff.format]
@@ -67,6 +72,7 @@ select = [
   "F",    # pyflakes
   "I",    # isort
   "PGH",  # pygrep-hooks
+  "PT",   # flake8-pytest-style
   "RUF",  # ruff
   "UP",   # pyupgrade
   "W",    # pycodestyle
@@ -91,3 +97,18 @@ pytest = ["pytest"]
 django = ["django"]
 rest_framework = ["rest_framework"]
 rdmo = ["rdmo"]
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.pytest]
+strict = true
+DJANGO_SETTINGS_MODULE = "tests.settings"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["-ra", "-p no:randomly"]
+filterwarnings = [
+  "error::django.utils.deprecation.RemovedInNextVersionWarning",
+  # RDMO opts into HTTPS URL fields while supporting Django 5.2.
+  "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.:django.utils.deprecation.RemovedInDjango60Warning",
+]

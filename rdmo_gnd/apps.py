@@ -6,4 +6,4 @@ class RDMOGNDConfig(AppConfig):
     verbose_name = 'GND Plugin'
 
     def ready(self):
-        from . import handlers  # noqa: F401
+        from . import checks, handlers  # noqa: F401
