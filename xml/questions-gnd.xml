@@ -67,6 +67,9 @@
 		<questions>
 			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd" order="1"/>
 			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/keyword" order="2"/>
+			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_keyword_synonyms" order="3"/>
+			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_sru_keywords" order="4"/>
+			<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_local_keywords" order="5"/>
 		</questions>
 		<conditions/>
 	</page>
@@ -186,4 +189,172 @@
 		<optionsets/>
 		<conditions/>
 	</question>
+	<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_keyword_synonyms">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords/gnd_keyword_synonyms</uri_path>
+		<dc:comment/>
+		<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_keyword_synonyms"/>
+		<is_collection>False</is_collection>
+		<is_optional>False</is_optional>
+		<help lang="en">Search GND subject headings by preferred names and synonyms (for example, fuel pellet).</help>
+		<text lang="en">GND keywords (synonyms)</text>
+		<default_text lang="en"/>
+		<verbose_name lang="en"/>
+		<help lang="de">Suchen Sie GND-Sachbegriffe über Vorzugsbenennungen und Synonyme (zum Beispiel fuel pellet).</help>
+		<text lang="de">GND-Schlagwörter (Synonyme)</text>
+		<default_text lang="de"/>
+		<verbose_name lang="de"/>
+		<help lang="fr"/>
+		<text lang="fr"/>
+		<default_text lang="fr"/>
+		<verbose_name lang="fr"/>
+		<help lang="it"/>
+		<text lang="it"/>
+		<default_text lang="it"/>
+		<verbose_name lang="it"/>
+		<help lang="es"/>
+		<text lang="es"/>
+		<default_text lang="es"/>
+		<verbose_name lang="es"/>
+		<default_option/>
+		<default_external_id/>
+		<widget_type>autocomplete</widget_type>
+		<value_type>text</value_type>
+		<maximum/>
+		<minimum/>
+		<step/>
+		<unit/>
+		<width/>
+		<optionsets>
+			<optionset dc:uri="http://example.com/terms/options/gnd_keyword_synonyms"/>
+		</optionsets>
+		<conditions/>
+	</question>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_keyword_synonyms">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>gnd_keyword_synonyms</key>
+		<path>project/research_question/keywords/gnd_keyword_synonyms</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords"/>
+	</attribute>
+	<optionset dc:uri="http://example.com/terms/options/gnd_keyword_synonyms">
+		<uri_prefix>http://example.com/terms</uri_prefix>
+		<uri_path>gnd_keyword_synonyms</uri_path>
+		<dc:comment/>
+		<provider_key>gnd_keyword_synonyms</provider_key>
+		<options/>
+		<conditions/>
+	</optionset>
+	<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_sru_keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords/gnd_sru_keywords</uri_path>
+		<dc:comment/>
+		<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_sru_keywords"/>
+		<is_collection>False</is_collection>
+		<is_optional>False</is_optional>
+		<help lang="en">Search GND subject headings, including synonyms and multilingual vocabulary mappings (for example, fuel for Brennstoff).</help>
+		<text lang="en">GND keywords (SRU)</text>
+		<default_text lang="en"/>
+		<verbose_name lang="en"/>
+		<help lang="de">Suchen Sie GND-Sachbegriffe mit Synonymen und mehrsprachigen Vokabularverknüpfungen (zum Beispiel fuel für Brennstoff).</help>
+		<text lang="de">GND-Schlagwörter (SRU)</text>
+		<default_text lang="de"/>
+		<verbose_name lang="de"/>
+		<help lang="fr"/>
+		<text lang="fr"/>
+		<default_text lang="fr"/>
+		<verbose_name lang="fr"/>
+		<help lang="it"/>
+		<text lang="it"/>
+		<default_text lang="it"/>
+		<verbose_name lang="it"/>
+		<help lang="es"/>
+		<text lang="es"/>
+		<default_text lang="es"/>
+		<verbose_name lang="es"/>
+		<default_option/>
+		<default_external_id/>
+		<widget_type>autocomplete</widget_type>
+		<value_type>text</value_type>
+		<maximum/>
+		<minimum/>
+		<step/>
+		<unit/>
+		<width/>
+		<optionsets>
+			<optionset dc:uri="http://example.com/terms/options/gnd_sru_keywords"/>
+		</optionsets>
+		<conditions/>
+	</question>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_sru_keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>gnd_sru_keywords</key>
+		<path>project/research_question/keywords/gnd_sru_keywords</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords"/>
+	</attribute>
+	<optionset dc:uri="http://example.com/terms/options/gnd_sru_keywords">
+		<uri_prefix>http://example.com/terms</uri_prefix>
+		<uri_path>gnd_sru_keywords</uri_path>
+		<dc:comment/>
+		<provider_key>gnd_sru_keywords</provider_key>
+		<options/>
+		<conditions/>
+	</optionset>
+	<question dc:uri="https://rdmorganiser.github.io/terms/questions/gnd/general/keywords/gnd_local_keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<uri_path>gnd/general/keywords/gnd_local_keywords</uri_path>
+		<dc:comment/>
+		<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_local_keywords"/>
+		<is_collection>False</is_collection>
+		<is_optional>False</is_optional>
+		<help lang="en">Search the local GND index for subject headings, including synonyms and multilingual vocabulary mappings (for example, fuel for Brennstoff).</help>
+		<text lang="en">GND keywords (local)</text>
+		<default_text lang="en"/>
+		<verbose_name lang="en"/>
+		<help lang="de">Suchen Sie im lokalen GND-Index nach Sachbegriffen mit Synonymen und mehrsprachigen Vokabularverknüpfungen (zum Beispiel fuel für Brennstoff).</help>
+		<text lang="de">GND-Schlagwörter (lokal)</text>
+		<default_text lang="de"/>
+		<verbose_name lang="de"/>
+		<help lang="fr"/>
+		<text lang="fr"/>
+		<default_text lang="fr"/>
+		<verbose_name lang="fr"/>
+		<help lang="it"/>
+		<text lang="it"/>
+		<default_text lang="it"/>
+		<verbose_name lang="it"/>
+		<help lang="es"/>
+		<text lang="es"/>
+		<default_text lang="es"/>
+		<verbose_name lang="es"/>
+		<default_option/>
+		<default_external_id/>
+		<widget_type>autocomplete</widget_type>
+		<value_type>text</value_type>
+		<maximum/>
+		<minimum/>
+		<step/>
+		<unit/>
+		<width/>
+		<optionsets>
+			<optionset dc:uri="http://example.com/terms/options/gnd_local_keywords"/>
+		</optionsets>
+		<conditions/>
+	</question>
+	<attribute dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords/gnd_local_keywords">
+		<uri_prefix>https://rdmorganiser.github.io/terms</uri_prefix>
+		<key>gnd_local_keywords</key>
+		<path>project/research_question/keywords/gnd_local_keywords</path>
+		<dc:comment/>
+		<parent dc:uri="https://rdmorganiser.github.io/terms/domain/project/research_question/keywords"/>
+	</attribute>
+	<optionset dc:uri="http://example.com/terms/options/gnd_local_keywords">
+		<uri_prefix>http://example.com/terms</uri_prefix>
+		<uri_path>gnd_local_keywords</uri_path>
+		<dc:comment/>
+		<provider_key>gnd_local_keywords</provider_key>
+		<options/>
+		<conditions/>
+	</optionset>
 </rdmo>

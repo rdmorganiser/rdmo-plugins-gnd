@@ -6,7 +6,7 @@ import requests
 
 from .cache import GNDResponseCache
 from .config import load_settings
-from .utils import get_identifier, is_record, is_search_response
+from .utils import get_identifier, is_record, is_search_response, is_subject_record
 
 logger = logging.getLogger(__name__)
 
@@ -96,3 +96,26 @@ class GNDClient(GNDHTTPClient):
         if identifier is None:
             return None
         return self._get('record', identifier, {'format': 'json'}, is_record)
+
+
+class GNDKeywordSynonymClient(GNDClient):
+    """Search Lobid subject headings by their preferred names and synonyms."""
+
+    def search(self, query):
+        query = query.strip()
+        if len(query) < self.min_len:
+            return None
+        # Treat input as a phrase within each field, preserving the fixed type filter.
+        literal = '"' + query.replace('\\', '\\\\').replace('"', '\\"') + '"'
+        params = {
+            'q': f'preferredName:{literal} OR variantName:{literal}',
+            'filter': 'type:SubjectHeading', 'format': 'json',
+        }
+        data = self._get('search', 'search', params, is_search_response)
+        if data is None:
+            return None
+        return {**data, 'member': [item for item in data['member'] if is_subject_record(item)]}
+
+    def get_record(self, identifier):
+        data = super().get_record(identifier)
+        return data if is_subject_record(data) else None

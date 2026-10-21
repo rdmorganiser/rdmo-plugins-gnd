@@ -6,7 +6,8 @@ from django.utils.html import format_html
 
 from rdmo.options.providers import Provider
 
-from .client import GNDClient
+from .client import GNDClient, GNDKeywordSynonymClient
+from .local_client import GNDLocalClient
 from .sru import GNDSRUClient
 from .utils import get_identifier
 
@@ -66,7 +67,19 @@ class GNDProvider(Provider):
         return query
 
 
-class GNDKeywordsProvider(GNDProvider):
+class GNDKeywordSynonymProvider(GNDProvider):
+    """Search subject headings using preferred names and synonyms in Lobid."""
+
+    client_class = GNDKeywordSynonymClient
+
+
+class GNDSRUKeywordsProvider(GNDProvider):
     """Search GND subject headings, including their multilingual mappings."""
 
     client_class = GNDSRUClient
+
+
+class GNDLocalKeywordsProvider(GNDProvider):
+    """Search subject headings and multilingual labels in the local FTS5 index."""
+
+    client_class = GNDLocalClient

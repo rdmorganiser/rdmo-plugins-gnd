@@ -9,7 +9,7 @@ from requests.exceptions import InvalidHeader
 from requests.structures import CaseInsensitiveDict
 from requests.utils import check_header_validity
 
-DEFAULT_USER_AGENT = 'rdmo-plugins-gnd; https://github.com/rdmorganiser/rdmo-plugins-gnd'
+from .utils import DEFAULT_USER_AGENT
 
 
 def configuration_error(name, message, hint):

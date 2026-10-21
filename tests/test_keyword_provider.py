@@ -12,15 +12,16 @@ from rdmo.projects.models import Project, Value
 from rdmo.projects.viewsets import ProjectViewSet
 from rdmo.questions.models import Catalog, Page, Question, Section
 
-from rdmo_gnd.providers import GNDKeywordsProvider, GNDProvider
+from rdmo_gnd.providers import GNDKeywordSynonymProvider, GNDProvider, GNDSRUKeywordsProvider
 
-from .helpers import sru_response, subject_record, xml_response
+from .helpers import response, sru_response, subject_record, xml_response
 
 
 @pytest.mark.parametrize('search', [None, '', '  ', 'f', ' fu ', 'fu [<a href="example">id</a>]'])
-def test_blank_and_short_keyword_searches_make_no_requests(settings, keyword_provider, http_get, search):
+@pytest.mark.parametrize('provider_fixture', ['keyword_provider', 'synonym_provider'])
+def test_blank_and_short_keyword_searches_make_no_requests(settings, request, provider_fixture, http_get, search):
     settings.GND_SEARCH_MIN_LEN = 3
-    assert keyword_provider.get_options(None, search=search) == []
+    assert request.getfixturevalue(provider_fixture).get_options(None, search=search) == []
     http_get.assert_not_called()
 
 
@@ -69,10 +70,17 @@ def test_keyword_upstream_failure_returns_empty_options(keyword_provider, http_g
 
 
 @pytest.mark.django_db
-def test_rdmo_options_api_and_saved_values_support_the_additional_provider(settings, http_get, django_user_model):
+@pytest.mark.parametrize('provider_name,provider_class', [
+    ('GNDSRUKeywordsProvider', GNDSRUKeywordsProvider),
+    ('GNDKeywordSynonymProvider', GNDKeywordSynonymProvider),
+])
+def test_rdmo_options_api_and_saved_values_support_the_additional_provider(
+    settings, http_get, django_user_model, provider_name, provider_class,
+):
+    provider_key = 'gnd_keyword_synonyms' if provider_class is GNDKeywordSynonymProvider else 'gnd_sru_keywords'
     settings.OPTIONSET_PROVIDERS = [
         ('gnd', 'GND Provider', 'rdmo_gnd.providers.GNDProvider'),
-        ('gnd_keywords', 'GND Keywords Provider', 'rdmo_gnd.providers.GNDKeywordsProvider'),
+        (provider_key, 'GND Keywords Provider', f'rdmo_gnd.providers.{provider_name}'),
     ]
     optionset = OptionSet.objects.create(uri_path='test-gnd', provider_key='gnd')
     assert isinstance(optionset.provider, GNDProvider)
@@ -90,15 +98,19 @@ def test_rdmo_options_api_and_saved_values_support_the_additional_provider(setti
         project=project, attribute=attribute, external_id='118540238', text='Existing person label',
     )
 
-    optionset.provider_key = 'gnd_keywords'
+    optionset.provider_key = provider_key
     optionset.save()
     optionset.refresh_from_db()
-    assert isinstance(optionset.provider, GNDKeywordsProvider)
+    assert isinstance(optionset.provider, provider_class)
     assert optionset.has_search
     assert optionset.has_refresh
-    http_get.return_value = sru_response([subject_record()])
+    is_synonym_provider = provider_class is GNDKeywordSynonymProvider
+    http_get.return_value = (
+        response({'totalItems': 1, 'member': [subject_record()]}) if is_synonym_provider
+        else sru_response([subject_record()])
+    )
     user = django_user_model.objects.create_user(username='gnd-admin', is_superuser=True, is_staff=True)
-    request = APIRequestFactory().get('/options/', {'optionset': optionset.pk, 'search': 'fuel'})
+    request = APIRequestFactory().get('/options/', {'optionset': optionset.pk, 'search': 'Brennstoff'})
     request.site = Site.objects.get(pk=settings.SITE_ID)
     force_authenticate(request, user=user)
     result = ProjectViewSet.as_view({'get': 'options'}, detail=True)(request, pk=project.pk)
@@ -112,6 +124,7 @@ def test_rdmo_options_api_and_saved_values_support_the_additional_provider(setti
         project=project, attribute=attribute, collection_index=1, external_id=option['id'], text=option['text'],
     )
     selection.refresh_from_db()
+    http_get.return_value = response(subject_record()) if is_synonym_provider else sru_response([subject_record()])
     assert optionset.provider.get_options(project, search=selection.external_id) == [{
         'id': selection.external_id, 'text': selection.text,
     }]

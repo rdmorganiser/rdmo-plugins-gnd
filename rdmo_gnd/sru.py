@@ -4,7 +4,7 @@ from unicodedata import normalize
 from xml.etree import ElementTree
 
 from .client import GNDHTTPClient
-from .utils import get_identifier, is_search_response
+from .utils import SUBJECT_TYPES, get_identifier, is_search_response
 
 SRU_URL = 'https://services.dnb.de/sru/authorities'
 RESULT_LIMIT = 10
@@ -16,15 +16,6 @@ NAMESPACES = {
 GND_NAMESPACES = ('https://d-nb.info/standards/elementset/gnd#', 'http://d-nb.info/standards/elementset/gnd#')
 RDF_ABOUT = f'{{{NAMESPACES["rdf"]}}}about'
 RDF_RESOURCE = f'{{{NAMESPACES["rdf"]}}}resource'
-
-# DNB's RDF records carry the specific type, rather than its inferred parents.
-# Include the entire SubjectHeading family, not only SubjectHeadingSensoStricto.
-SUBJECT_TYPES = frozenset({
-    'SubjectHeading', 'SubjectHeadingSensoStricto', 'CharactersOrMorphemes',
-    'EthnographicName', 'FictiveTerm', 'GroupOfPersons', 'HistoricSingleEventOrEra',
-    'Language', 'MeansOfTransportWithIndividualName', 'NomenclatureInBiologyOrChemistry',
-    'ProductNameOrBrandName', 'SoftwareProduct',
-})
 
 
 class _SRUTreeBuilder(ElementTree.TreeBuilder):

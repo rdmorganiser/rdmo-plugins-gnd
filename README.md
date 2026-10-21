@@ -3,6 +3,8 @@ rdmo-plugins-gnd
 
 This plugin implements dynamic option set, that queries the API for the Gemeinsame Normdatei at https://lobid.org/gnd.
 The keyword provider uses [DNB's live SRU service](https://www.dnb.de/sru) for subject headings and multilingual vocabulary mappings.
+An optional **local keyword provider** uses a shared SQLite FTS5 index; see the
+[Ubuntu installation and index administration guide](docs/local-index.md).
 
 If you intend to use the API, please follow it's [usage policy](http://lobid.org/usage-policy/).
 
@@ -25,7 +27,8 @@ INSTALLED_APPS += ['rdmo_gnd']
 
 OPTIONSET_PROVIDERS += [
     ('gnd', _('GND Provider'), 'rdmo_gnd.providers.GNDProvider'),
-    ('gnd_keywords', _('GND Keywords Provider'), 'rdmo_gnd.providers.GNDKeywordsProvider'),
+    ('gnd_keyword_synonyms', _('GND Keyword Synonym Provider'), 'rdmo_gnd.providers.GNDKeywordSynonymProvider'),
+    ('gnd_sru_keywords', _('GND SRU Keywords Provider'), 'rdmo_gnd.providers.GNDSRUKeywordsProvider'),
 ]
 ```
 
@@ -34,13 +37,29 @@ The option set provider should now be selectable for option sets in your RDMO in
 Keyword searches in German and English
 -------------------------------------
 
-Select **GND Keywords Provider** (`gnd_keywords`) for keyword option sets. It
-includes the complete GND `SubjectHeading` family, including software products,
+Choose either keyword provider for keyword option sets:
+
+| Provider | Search coverage |
+| --- | --- |
+| **GND Keyword Synonym Provider** (`gnd_keyword_synonyms`) | Preferred names and synonyms stored in Lobid, including English aliases. |
+| **GND SRU Keywords Provider** (`gnd_sru_keywords`) | DNB preferred names, synonyms, and multilingual vocabulary mappings. |
+
+Both include the complete GND `SubjectHeading` family, including software products,
 chemical and biological names, languages, and other subject-heading subtypes.
 People, institutions, places, and works are excluded. The general **GND Provider**
 (`gnd`) remains available for searches across all entity types.
 
-The keyword provider searches preferred names first (`dnb.an`), then adds matches
+The synonym provider searches only `preferredName` and `variantName`, using
+`filter=type:SubjectHeading`. Input is quoted as a phrase in each field, with
+quotes and backslashes escaped; no wildcard is appended. Each uncached search
+makes one Lobid request and preserves its result ordering. English input works
+when the term is present in one of these fields: for example, `fuel pellet` can
+find **Brennstofftablette** (`7707637-0`). It does not search English labels from
+linked vocabularies when Lobid exposes only their URIs. In particular, `fuel`
+is not a synonym on the **Brennstoff** record; use the SRU provider for that match.
+Display labels use the record's preferred name, rather than the matching synonym.
+
+The SRU provider searches preferred names first (`dnb.an`), then adds matches
 from the subject index (`dnb.sw`), including synonyms and multilingual mappings.
 Both queries restrict results to subject headings (`dnb.bbg = Ts*`). For example,
 English `fuel` can find **Brennstoff** (`4008186-2`), and `field work` can find
@@ -49,18 +68,19 @@ in DNB's index; it is not a translation service and does not reproduce GND
 Explorer's ranking. Results use the canonical German preferred names and GND
 identifiers from DNB's RDF records.
 
-Each search requests up to ten records from each index, then returns up to ten
+Each SRU search requests up to ten records from each index, then returns up to ten
 distinct options, with preferred-name results first and upstream order preserved
 within each group. Input is treated as literal search text; CQL operators,
 wildcards, and anchors are escaped. No wildcard is appended automatically.
-An uncached search makes two requests to DNB; a direct identifier lookup makes
-one. Both share the cache and request limits described below. If either search
-request fails, the provider returns no options and logs a warning.
+An uncached SRU search makes two requests to DNB; a direct identifier lookup makes
+one. The online providers share the cache and request limits described below. If either
+SRU search request fails, the provider returns no options and logs a warning.
 
 Pasted GND identifiers and canonical GND URLs are subject to the same entity
-restriction. Selecting the new provider for an existing option set preserves
-saved answers and bare external identifiers; previously saved people or
-institutions are not offered as new keyword selections. No frontend change,
+restriction in both keyword providers, including when a record is already cached
+by the general provider. Selecting either keyword provider for an existing option
+set preserves saved answers and bare external identifiers; previously saved
+people or institutions are not offered as new keyword selections. No frontend change,
 local dataset import, or plugin database migration is required.
 
 
@@ -79,8 +99,8 @@ and generate the previous link format. Links with a target also include
 `rel="noopener noreferrer"`. Django escapes the preferred name, occupation text,
 link URL, target, and identifier when generating the HTML. Saved display labels
 are decoded back to their original search text; typed queries retain literal HTML
-entities. The setting affects both keyword results and direct
-identifier lookups in both providers; it also applies when rendering cached responses.
+entities. The setting affects search results and direct identifier lookups in all
+providers; it also applies when rendering cached responses.
 Previously saved labels receive the new link format when RDMO refreshes them.
 
 RDMO's frontend may enforce its own link targets. In particular, RDMO 2.5.2's
@@ -129,7 +149,7 @@ text headers share cache entries. Invalid header names, values, and encodings ar
 reported as configuration errors. A `None` value for another header retains
 Requests' behaviour of removing that header from its session defaults.
 
-The keyword provider sends the same configured `User-Agent` to DNB. Other entries
+The SRU provider sends the same configured `User-Agent` to DNB. Other entries
 in `GND_PROVIDER_HEADERS` are used only for Lobid requests, so endpoint-specific
 headers are not forwarded to the additional service.
 
@@ -137,7 +157,7 @@ headers are not forwarded to the additional service.
 Search limits and request handling
 ----------------------------------
 
-Both providers support the following settings in `config/settings/local.py`:
+All providers support the following settings in `config/settings/local.py`:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -152,10 +172,10 @@ Bare GND identifiers (such as `2129905-5` or `11850391X`) and canonical
 keyword length setting. The default minimum of one character preserves existing
 keyword search behaviour. These settings do not change RDMO's frontend debounce.
 
-The general provider and `GND_PROVIDER_MAP` handler use `GND_PROVIDER_URL`
-(default `https://lobid.org/gnd`) and `GND_PROVIDER_HEADERS`. The keyword provider
-uses `https://services.dnb.de/sru/authorities` with SRU 1.1 and `RDFxml` records.
-Both clients share request and cache handling. Responses are checked for HTTP
+The general provider, synonym provider, and `GND_PROVIDER_MAP` handler use
+`GND_PROVIDER_URL` (default `https://lobid.org/gnd`) and `GND_PROVIDER_HEADERS`. The
+SRU provider uses `https://services.dnb.de/sru/authorities` with SRU 1.1 and `RDFxml`
+records. All clients share request and cache handling. Responses are checked for HTTP
 errors, invalid JSON or XML, SRU diagnostics, and the fields required by the
 provider before they are cached or used. Keyword responses must contain an
 allowed subject-heading type as well as a consistent GND identifier and name.
@@ -269,7 +289,7 @@ routed read/write connections when a read removes expired entries. HTTP requests
 run outside these savepoints; memory and file caches do not introduce database
 transactions.
 
-When enabled, both HTTP clients compose `GNDResponseCache` from `rdmo_gnd.cache`.
+When enabled, all HTTP clients compose `GNDResponseCache` from `rdmo_gnd.cache`.
 Otherwise, `response_cache` is `None` and `_get` calls `_fetch` directly. The cache's
 `get_or_fetch` method coordinates backend access and calls a supplied fetch
 function on a miss. The fetch function returns parsed, validated data, or `None`
@@ -298,7 +318,7 @@ Development
 Install the development dependencies in a virtual environment:
 
 ```bash
-pip install -e '.[dev]'
+pip install -e '.[dev,local]'
 pytest
 ruff check rdmo_gnd tests
 ```
@@ -319,12 +339,16 @@ part of the suite, use commands such as `pytest tests/test_client.py` or
 SRU tests include fixed English search examples, subject-type filtering, escaped
 CQL input, preferred-name ordering, and service failures. An RDMO integration test
 checks provider selection, the project options API, and saving and reloading GND
-identifiers without changing existing answers.
+identifiers without changing existing answers. Synonym-provider tests cover
+preferred-name and synonym queries, literal input, subject restrictions on search
+and identifier lookups, and cache isolation from unrestricted searches.
 
-For a manual staging check, register both providers, select `gnd_keywords` for a
+For a manual staging check, register the providers, select `gnd_sru_keywords` for a
 keyword option set, search for `fuel` and `field work`, save a selection, and reload
 the project. Confirm that the selected identifier and label are retained, a pasted
 person identifier is not offered, and option sets using `gnd` still allow people.
+Then select `gnd_keyword_synonyms`, search for `fuel pellet`, and confirm that
+**Brennstofftablette** is offered and that pasted person identifiers remain excluded.
 
 To run the same suite against PostgreSQL, install its test driver and use a
 dedicated test server and role with permission to create databases:
@@ -340,3 +364,23 @@ The PostgreSQL test settings use the standard `PGHOST`, `PGPORT`, `PGUSER`,
 `test_<PGDATABASE>` and `test_<PGDATABASE>_cache`; no production settings are
 imported. PostgreSQL tests reproduce connection-aborting SQL errors that SQLite
 does not reproduce, including failures during expired-entry cleanup.
+
+
+Local keyword provider
+----------------------
+
+Install `rdmo-plugins-gnd[local]` and configure `GND_INDEX_PATH` to add
+`GNDLocalKeywordsProvider` with key `gnd_local_keywords`. It searches preferred
+names, variants, and multilingual equivalents locally, including English `fuel`
+for **Brennstoff**. The three online providers remain available. The example XML
+catalog includes a local keyword question and OptionSet.
+
+[The local-index guide](docs/local-index.md) covers shared Ubuntu deployment,
+bootstrap and systemd updates, offline attribute mapping with `lookup='local'`,
+validation, rollback, settings, and CLI commands. Existing mappings default to
+`lookup='lobid'`; `auto` opts in to local resolution when all requested fields are
+supported. Local autocomplete always stays offline.
+
+The package requires Python 3.12+. Hatchling and hatch-vcs derive built package
+versions from Git tags; source checkouts use a placeholder until built. Release
+builds need full Git history/tags. Do not edit the generated `_version.py`.

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check DNB for a new GND snapshot every 12 hours
+
+[Timer]
+OnCalendar=*-*-* 00,12:15:00
+Persistent=true
+RandomizedDelaySec=10m
+Unit=rdmo-gnd-update.service
+
+[Install]
+WantedBy=timers.target

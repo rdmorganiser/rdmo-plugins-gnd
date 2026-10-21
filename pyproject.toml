@@ -22,8 +22,6 @@ classifiers = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: Apache Software License',
     "Programming Language :: Python :: 3 :: Only",
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
@@ -38,7 +36,14 @@ dynamic = ["version"]
 [project.urls]
 repository = "https://github.com/rdmorganiser/rdmo-plugins-gnd"
 
+[project.scripts]
+rdmo-gnd = "rdmo_gnd.index.cli:main"
+
 [project.optional-dependencies]
+local = [
+    "sqlite-utils>=4.2.1,<5",
+    "defusedxml>=0.7.1,<1",
+]
 dev = [
     "build",
     "pre-commit",
@@ -53,8 +58,14 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.build.hooks.vcs]
+version-file = "rdmo_gnd/_version.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["rdmo_gnd"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/rdmo_gnd", "/tests", "/xml", "/docs", "/README.md", "/LICENSE", "/pyproject.toml"]
 
 [tool.ruff]
 target-version = "py311"
