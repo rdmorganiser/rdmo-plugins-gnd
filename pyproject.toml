@@ -12,7 +12,7 @@ maintainers = [
 ]
 description = "Plugin for RDMO to query the Gemeinsame Normdatei"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "AUTHORS"]
 classifiers = [
@@ -22,8 +22,6 @@ classifiers = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: Apache Software License',
     "Programming Language :: Python :: 3 :: Only",
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
@@ -38,10 +36,21 @@ dynamic = ["version"]
 [project.urls]
 repository = "https://github.com/rdmorganiser/rdmo-plugins-gnd"
 
+[project.scripts]
+rdmo-gnd = "rdmo_gnd.index.cli:main"
+
 [project.optional-dependencies]
+local = [
+    "sqlite-utils>=4.2.1,<5",
+    "defusedxml>=0.7.1,<1",
+]
 dev = [
     "build",
     "pre-commit",
+    "pytest>=9.0,<10.0",
+    "pytest-django>=4.11,<5.0",
+    "pytest-mock>=3.15,<4.0",
+    "rdmo",
     "ruff",
     "twine",
 ]
@@ -49,10 +58,17 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.build.hooks.vcs]
+version-file = "rdmo_gnd/_version.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["rdmo_gnd"]
 
+[tool.hatch.build.targets.sdist]
+include = ["/rdmo_gnd", "/tests", "/xml", "/docs", "/README.md", "/LICENSE", "/pyproject.toml"]
+
 [tool.ruff]
+target-version = "py311"
 line-length = 120
 
 [tool.ruff.format]
@@ -67,6 +83,7 @@ select = [
   "F",    # pyflakes
   "I",    # isort
   "PGH",  # pygrep-hooks
+  "PT",   # flake8-pytest-style
   "RUF",  # ruff
   "UP",   # pyupgrade
   "W",    # pycodestyle
@@ -91,3 +108,18 @@ pytest = ["pytest"]
 django = ["django"]
 rest_framework = ["rest_framework"]
 rdmo = ["rdmo"]
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.pytest]
+strict = true
+DJANGO_SETTINGS_MODULE = "tests.settings"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["-ra", "-p no:randomly"]
+filterwarnings = [
+  "error::django.utils.deprecation.RemovedInNextVersionWarning",
+  # RDMO opts into HTTPS URL fields while supporting Django 5.2.
+  "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.:django.utils.deprecation.RemovedInDjango60Warning",
+]

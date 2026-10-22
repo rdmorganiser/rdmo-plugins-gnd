@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='utf-8'?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record type="Authority">
+    <leader>00000nz  a2200000nc 4500</leader>
+    <controlfield tag="001">041325176</controlfield>
+    <controlfield tag="005">20240301164213.0</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">4132517-5</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4132517-5</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">s</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">saz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="150" ind1=" " ind2=" ">
+      <subfield code="a">Betriebsstoff</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1133681727</subfield>
+      <subfield code="0">(DLC)sh85052213</subfield>
+      <subfield code="0">http://id.loc.gov/authorities/subjects/sh85052213</subfield>
+      <subfield code="a">Fuel</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">lcsh</subfield>
+      <subfield code="9">L:eng</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1133681727</subfield>
+      <subfield code="0">(FrPBN)FRBNF11976314</subfield>
+      <subfield code="0">https://data.bnf.fr/ark:/12148/cb119763148</subfield>
+      <subfield code="a">Combustibles</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">ram</subfield>
+      <subfield code="9">L:fre</subfield>
+    </datafield>
+  </record>
+  <record type="Authority">
+    <leader>00000nz  a2200000nc 4500</leader>
+    <controlfield tag="001">040081869</controlfield>
+    <controlfield tag="005">20250328150644.0</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">4008186-2</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4008186-2</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">s</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">saz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="150" ind1=" " ind2=" ">
+      <subfield code="a">Brennstoff</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1134636393</subfield>
+      <subfield code="0">(DLC)sh85052213</subfield>
+      <subfield code="0">http://id.loc.gov/authorities/subjects/sh85052213</subfield>
+      <subfield code="a">Fuel</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">lcsh</subfield>
+      <subfield code="9">L:eng</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1134636393</subfield>
+      <subfield code="0">(FrPBN)FRBNF11976314</subfield>
+      <subfield code="0">https://data.bnf.fr/ark:/12148/cb119763148</subfield>
+      <subfield code="a">Combustibles</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">ram</subfield>
+      <subfield code="9">L:fre</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)966711815</subfield>
+      <subfield code="0">(ZBW)14173-6</subfield>
+      <subfield code="0">http://zbw.eu/stw/descriptor/14173-6</subfield>
+      <subfield code="a">Brennstoff</subfield>
+      <subfield code="4">=EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#exactEquivalence</subfield>
+      <subfield code="i">exakte Aequivalenz</subfield>
+      <subfield code="2">stw</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1346644810</subfield>
+      <subfield code="0">6606096</subfield>
+      <subfield code="0">http://uri.gbv.de/terminology/etiras/800536657</subfield>
+      <subfield code="a">Brennstoffe</subfield>
+      <subfield code="4">=EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#exactEquivalence</subfield>
+      <subfield code="i">exakte Aequivalenz</subfield>
+      <subfield code="5">DE-615</subfield>
+      <subfield code="2">etiras</subfield>
+    </datafield>
+  </record>
+  <record type="Authority">
+    <leader>00000nz  a2200000nc 4500</leader>
+    <controlfield tag="001">1004066864</controlfield>
+    <controlfield tag="005">20260826165102.0</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">7707637-0</subfield>
+      <subfield code="0">http://d-nb.info/gnd/7707637-0</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">s</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">saz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="150" ind1=" " ind2=" ">
+      <subfield code="a">Brennstofftablette</subfield>
+    </datafield>
+    <datafield tag="450" ind1=" " ind2=" ">
+      <subfield code="a">Fuel pellet</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)042116465</subfield>
+      <subfield code="0">(DE-588)4211646-6</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4211646-6</subfield>
+      <subfield code="a">Brennstab</subfield>
+      <subfield code="4">obal</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#broaderTermGeneral</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Oberbegriff allgemein</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)041303180</subfield>
+      <subfield code="0">(DE-588)4130318-0</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4130318-0</subfield>
+      <subfield code="a">Kernbrennstoff</subfield>
+      <subfield code="4">obal</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#broaderTermGeneral</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Oberbegriff allgemein</subfield>
+    </datafield>
+  </record>
+  <record type="Authority">
+    <leader>00000nz  a2200000nc 4500</leader>
+    <controlfield tag="001">040081958</controlfield>
+    <controlfield tag="005">20240301163950.0</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">4008195-3</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4008195-3</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">s</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">saz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="150" ind1=" " ind2=" ">
+      <subfield code="a">Brennstoffzelle</subfield>
+    </datafield>
+    <datafield tag="450" ind1=" " ind2=" ">
+      <subfield code="a">Brennstoffelement</subfield>
+      <subfield code="g">Direktumwandlung</subfield>
+    </datafield>
+    <datafield tag="450" ind1=" " ind2=" ">
+      <subfield code="a">Brennstoffelement</subfield>
+      <subfield code="g">Energiedirektumwandlung</subfield>
+    </datafield>
+    <datafield tag="450" ind1=" " ind2=" ">
+      <subfield code="a">Elektrochemische Brennstoffzelle</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)04155907X</subfield>
+      <subfield code="0">(DE-588)4155907-1</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4155907-1</subfield>
+      <subfield code="a">Galvanisches Element</subfield>
+      <subfield code="4">obal</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#broaderTermGeneral</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Oberbegriff allgemein</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)040147207</subfield>
+      <subfield code="0">(DE-588)4014720-4</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4014720-4</subfield>
+      <subfield code="a">Energiequelle</subfield>
+      <subfield code="4">obal</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#broaderTermGeneral</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Oberbegriff allgemein</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)113363883X</subfield>
+      <subfield code="0">(DLC)sh85052220</subfield>
+      <subfield code="0">http://id.loc.gov/authorities/subjects/sh85052220</subfield>
+      <subfield code="a">Fuel cells</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">lcsh</subfield>
+      <subfield code="9">L:eng</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)113363883X</subfield>
+      <subfield code="0">(FrPBN)FRBNF11944532</subfield>
+      <subfield code="0">https://data.bnf.fr/ark:/12148/cb11944532n</subfield>
+      <subfield code="a">Piles à combustible</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">ram</subfield>
+      <subfield code="9">L:fre</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1254414355</subfield>
+      <subfield code="0">(SpMaBN)XX540622</subfield>
+      <subfield code="0">https://datos.bne.es/resource/XX540622</subfield>
+      <subfield code="a">Pilas de combustible</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">embne</subfield>
+      <subfield code="9">L:spa</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)966711831</subfield>
+      <subfield code="0">(ZBW)18250-1</subfield>
+      <subfield code="0">http://zbw.eu/stw/descriptor/18250-1</subfield>
+      <subfield code="a">Brennstoffzelle</subfield>
+      <subfield code="4">=EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#exactEquivalence</subfield>
+      <subfield code="i">exakte Aequivalenz</subfield>
+      <subfield code="2">stw</subfield>
+    </datafield>
+  </record>
+  <record type="Authority">
+    <leader>00000nz  a2200000nc 4500</leader>
+    <controlfield tag="001">042350085</controlfield>
+    <controlfield tag="005">20260623080132.0</controlfield>
+    <datafield tag="024" ind1="7" ind2=" ">
+      <subfield code="a">4235008-6</subfield>
+      <subfield code="0">http://d-nb.info/gnd/4235008-6</subfield>
+      <subfield code="2">gnd</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">s</subfield>
+      <subfield code="2">gndgen</subfield>
+    </datafield>
+    <datafield tag="075" ind1=" " ind2=" ">
+      <subfield code="b">saz</subfield>
+      <subfield code="2">gndspec</subfield>
+    </datafield>
+    <datafield tag="150" ind1=" " ind2=" ">
+      <subfield code="a">Heizöl S</subfield>
+    </datafield>
+    <datafield tag="450" ind1=" " ind2=" ">
+      <subfield code="a">Schweres Heizöl</subfield>
+    </datafield>
+    <datafield tag="550" ind1=" " ind2=" ">
+      <subfield code="0">(DE-101)041594762</subfield>
+      <subfield code="0">(DE-588)4159476-9</subfield>
+      <subfield code="0">https://d-nb.info/gnd/4159476-9</subfield>
+      <subfield code="a">Heizöl</subfield>
+      <subfield code="4">obal</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#broaderTermGeneral</subfield>
+      <subfield code="w">r</subfield>
+      <subfield code="i">Oberbegriff allgemein</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1134687605</subfield>
+      <subfield code="0">(DLC)sh2003011702</subfield>
+      <subfield code="0">http://id.loc.gov/authorities/subjects/sh2003011702</subfield>
+      <subfield code="a">Heavy oil as fuel</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">lcsh</subfield>
+      <subfield code="9">L:eng</subfield>
+    </datafield>
+    <datafield tag="750" ind1=" " ind2="7">
+      <subfield code="0">(DE-101)1134687605</subfield>
+      <subfield code="0">(FrPBN)FRBNF11932951</subfield>
+      <subfield code="0">https://data.bnf.fr/ark:/12148/cb11932951b</subfield>
+      <subfield code="a">Pétrole (combustible)</subfield>
+      <subfield code="4">EQ</subfield>
+      <subfield code="4">https://d-nb.info/standards/elementset/gnd#equivalence</subfield>
+      <subfield code="i">Aequivalenz</subfield>
+      <subfield code="2">ram</subfield>
+      <subfield code="9">L:fre</subfield>
+    </datafield>
+  </record>
+</collection>

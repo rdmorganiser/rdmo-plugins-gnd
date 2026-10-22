@@ -1,0 +1,17 @@
+[Unit]
+Description=Update the shared local GND subject-heading index
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=rdmo-gnd
+Group=rdmo-gnd
+UMask=0027
+ExecStart=/opt/rdmo-gnd/venv/bin/rdmo-gnd update --directory /var/lib/rdmo-gnd
+TimeoutStartSec=30min
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/rdmo-gnd
