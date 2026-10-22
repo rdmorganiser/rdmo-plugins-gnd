@@ -14,17 +14,21 @@ from rdmo_gnd.sru import GNDSRUClient
 from .helpers import sru_response, subject_record, xml_response
 
 
-@pytest.mark.parametrize('term,filename,identifier,label', [
-    ('fuel', 'fuel.xml', '4008186-2', 'Brennstoff'),
-    ('field work', 'field-work.xml', '4016674-0', 'Feldforschung'),
-])
+@pytest.mark.parametrize(
+    'term,filename,identifier,label',
+    [
+        ('fuel', 'fuel.xml', '4008186-2', 'Brennstoff'),
+        ('field work', 'field-work.xml', '4016674-0', 'Feldforschung'),
+    ],
+)
 def test_english_terms_use_multilingual_subject_search(http_get, term, filename, identifier, label):
     content = (Path(__file__).parent / 'fixtures' / 'sru' / filename).read_bytes()
     http_get.side_effect = [sru_response(), xml_response(content)]
     data = GNDSRUClient().search(term)
     assert any(item['gndIdentifier'] == identifier and item['preferredName'] == label for item in data['member'])
     assert [call.kwargs['params']['query'] for call in http_get.call_args_list] == [
-        f'dnb.an = "{term}" and dnb.bbg = Ts*', f'dnb.sw = "{term}" and dnb.bbg = Ts*',
+        f'dnb.an = "{term}" and dnb.bbg = Ts*',
+        f'dnb.sw = "{term}" and dnb.bbg = Ts*',
     ]
 
 
@@ -82,35 +86,58 @@ def test_short_queries_do_not_access_cache_or_network(settings, mocker, http_get
     http_get.assert_not_called()
 
 
-@pytest.mark.parametrize('term,literal', [
-    ('"fuel" or dnb.bbg=Tp*', r'"\"fuel\" or dnb.bbg=Tp\*"'),
-    ('path\\term', r'"path\\term"'),
-    ('a*?^', r'"a\*\?\^"'),
-    ('Research &amp; Development', '"Research &amp; Development"'),
-    ('Étude', '"Étude"'),
-])
+@pytest.mark.parametrize(
+    'term,literal',
+    [
+        ('"fuel" or dnb.bbg=Tp*', r'"\"fuel\" or dnb.bbg=Tp\*"'),
+        ('path\\term', r'"path\\term"'),
+        ('a*?^', r'"a\*\?\^"'),
+        ('Research &amp; Development', '"Research &amp; Development"'),
+        ('Étude', '"Étude"'),
+    ],
+)
 def test_search_text_is_a_cql_literal(http_get, term, literal):
     http_get.return_value = sru_response()
     assert GNDSRUClient().search(term) == {'totalItems': 0, 'member': []}
     assert [call.kwargs['params']['query'] for call in http_get.call_args_list] == [
-        f'dnb.an = {literal} and dnb.bbg = Ts*', f'dnb.sw = {literal} and dnb.bbg = Ts*',
+        f'dnb.an = {literal} and dnb.bbg = Ts*',
+        f'dnb.sw = {literal} and dnb.bbg = Ts*',
     ]
 
 
-@pytest.mark.parametrize('entity_type', [
-    'SubjectHeading', 'SubjectHeadingSensoStricto', 'CharactersOrMorphemes', 'EthnographicName', 'FictiveTerm',
-    'GroupOfPersons', 'HistoricSingleEventOrEra', 'Language', 'MeansOfTransportWithIndividualName',
-    'NomenclatureInBiologyOrChemistry', 'ProductNameOrBrandName', 'SoftwareProduct',
-])
+@pytest.mark.parametrize(
+    'entity_type',
+    [
+        'SubjectHeading',
+        'SubjectHeadingSensoStricto',
+        'CharactersOrMorphemes',
+        'EthnographicName',
+        'FictiveTerm',
+        'GroupOfPersons',
+        'HistoricSingleEventOrEra',
+        'Language',
+        'MeansOfTransportWithIndividualName',
+        'NomenclatureInBiologyOrChemistry',
+        'ProductNameOrBrandName',
+        'SoftwareProduct',
+    ],
+)
 def test_all_subject_heading_types_are_available(http_get, entity_type):
     item = subject_record(entity_type=entity_type)
     http_get.return_value = sru_response([item])
     assert GNDSRUClient().search('example')['member'] == [item]
 
 
-@pytest.mark.parametrize('entity_type', [
-    'Person', 'DifferentiatedPerson', 'CorporateBody', 'PlaceOrGeographicName', 'Work',
-])
+@pytest.mark.parametrize(
+    'entity_type',
+    [
+        'Person',
+        'DifferentiatedPerson',
+        'CorporateBody',
+        'PlaceOrGeographicName',
+        'Work',
+    ],
+)
 def test_out_of_scope_records_are_filtered_for_searches_and_identifiers(http_get, entity_type):
     http_get.return_value = sru_response([subject_record(entity_type=entity_type)])
     client = GNDSRUClient()
@@ -118,9 +145,13 @@ def test_out_of_scope_records_are_filtered_for_searches_and_identifiers(http_get
     assert client.get_record('4008186-2') is None
 
 
-@pytest.mark.parametrize('namespace', [
-    'http://d-nb.info/standards/elementset/gnd#', 'https://d-nb.info/standards/elementset/gnd#',
-])
+@pytest.mark.parametrize(
+    'namespace',
+    [
+        'http://d-nb.info/standards/elementset/gnd#',
+        'https://d-nb.info/standards/elementset/gnd#',
+    ],
+)
 def test_rdf_namespaces_and_unicode_labels_are_normalized(http_get, namespace):
     item = subject_record(name='Grüner Baumpython', entity_type='NomenclatureInBiologyOrChemistry')
     http_get.return_value = sru_response([item], gnd_namespace=namespace)
@@ -181,34 +212,55 @@ def test_cache_errors_preserve_sru_results(mocker, http_get, caplog, operation):
 
 
 def test_non_subject_cache_entry_is_replaced(mocker, http_get, caplog):
-    mocker.patch.object(caches['default'], 'get', return_value={
-        'totalItems': 1, 'member': [subject_record(entity_type='Person')],
-    })
+    mocker.patch.object(
+        caches['default'],
+        'get',
+        return_value={
+            'totalItems': 1,
+            'member': [subject_record(entity_type='Person')],
+        },
+    )
     http_get.return_value = sru_response([subject_record()])
     assert GNDSRUClient().search('Brennstoff')['member'] == [subject_record()]
     assert 'Invalid cached GND sru-search response' in caplog.text
 
 
-@pytest.mark.parametrize('payload', [
-    b'not XML', b'<html>Service unavailable</html>',
-    sru_response(total=-1).content,
-    sru_response([subject_record()], total=0).content,
-    sru_response(total=1).content,
-    sru_response([subject_record()]).content.replace(b'RDFxml', b'MARC21-xml'),
-    sru_response([{**subject_record(), 'gndIdentifier': '4016674-0'}]).content,
-    sru_response([{**subject_record(), 'id': 'https://example.org/4008186-2'}]).content,
-    sru_response([{**subject_record(), 'preferredName': ''}]).content,
-    sru_response([{**subject_record(), 'type': []}]).content,
-    b'<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"/>',
-    b'<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">'
-    b'<numberOfRecords>0</numberOfRecords>'
-    b'<diagnostics><diagnostic xmlns="http://www.loc.gov/zing/srw/diagnostic/">'
-    b'<message>private diagnostic detail</message></diagnostic></diagnostics></searchRetrieveResponse>',
-    b'<!DOCTYPE searchRetrieveResponse [<!ENTITY example "private entity">]>' + sru_response().content,
-], ids=[
-    'malformed', 'html', 'negative-count', 'inconsistent-count', 'missing-records', 'wrong-schema',
-    'inconsistent-id', 'external-url', 'empty-label', 'missing-type', 'missing-count', 'diagnostic', 'dtd',
-])
+@pytest.mark.parametrize(
+    'payload',
+    [
+        b'not XML',
+        b'<html>Service unavailable</html>',
+        sru_response(total=-1).content,
+        sru_response([subject_record()], total=0).content,
+        sru_response(total=1).content,
+        sru_response([subject_record()]).content.replace(b'RDFxml', b'MARC21-xml'),
+        sru_response([{**subject_record(), 'gndIdentifier': '4016674-0'}]).content,
+        sru_response([{**subject_record(), 'id': 'https://example.org/4008186-2'}]).content,
+        sru_response([{**subject_record(), 'preferredName': ''}]).content,
+        sru_response([{**subject_record(), 'type': []}]).content,
+        b'<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"/>',
+        b'<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">'
+        b'<numberOfRecords>0</numberOfRecords>'
+        b'<diagnostics><diagnostic xmlns="http://www.loc.gov/zing/srw/diagnostic/">'
+        b'<message>private diagnostic detail</message></diagnostic></diagnostics></searchRetrieveResponse>',
+        b'<!DOCTYPE searchRetrieveResponse [<!ENTITY example "private entity">]>' + sru_response().content,
+    ],
+    ids=[
+        'malformed',
+        'html',
+        'negative-count',
+        'inconsistent-count',
+        'missing-records',
+        'wrong-schema',
+        'inconsistent-id',
+        'external-url',
+        'empty-label',
+        'missing-type',
+        'missing-count',
+        'diagnostic',
+        'dtd',
+    ],
+)
 def test_invalid_sru_responses_are_logged_and_not_cached(http_get, caplog, payload):
     http_get.return_value = xml_response(payload)
     http_get.return_value.headers['X-Request-ID'] = 'sru-failure-id'
@@ -247,3 +299,14 @@ def test_sru_http_failures_are_not_cached(http_get, caplog):
     assert 'private' not in caplog.text
     http_get.return_value = sru_response([subject_record()])
     assert GNDSRUClient().search('fuel')['member'] == [subject_record()]
+
+
+def test_global_params_do_not_override_sru_subject_search(settings, http_get):
+    settings.GND_PARAMS = {'q': 'person', 'filter': 'type:Person', 'query': 'person'}
+    http_get.return_value = sru_response([subject_record()])
+    GNDSRUClient().search('fuel')
+    for call in http_get.call_args_list:
+        params = call.kwargs['params']
+        assert 'q' not in params
+        assert 'filter' not in params
+        assert 'dnb.bbg = Ts*' in params['query']

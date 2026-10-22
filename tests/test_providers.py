@@ -28,14 +28,21 @@ def test_saved_label_is_normalized_without_changing_query_syntax(provider, http_
     assert http_get.call_args.kwargs['params']['q'] == record()['preferredName']
 
 
-@pytest.mark.parametrize('preferred_name', [
-    'Research & Development', '<b>Example label</b>', 'Literal &amp; expression',
-    "L'étude \"example\"", 'x &lt; y',
-])
+@pytest.mark.parametrize(
+    'preferred_name',
+    [
+        'Research & Development',
+        '<b>Example label</b>',
+        'Literal &amp; expression',
+        'L\'étude "example"',
+        'x &lt; y',
+    ],
+)
 def test_label_text_is_escaped_and_restored_for_search(provider, preferred_name, http_get):
     occupation = '<i>Chemistry & "physics"</i>'
     item = {
-        **record(), 'preferredName': preferred_name,
+        **record(),
+        'preferredName': preferred_name,
         'professionOrOccupation': [{'label': occupation}],
     }
     http_get.return_value = response({'totalItems': 1, 'member': [item]})
@@ -50,9 +57,15 @@ def test_label_text_is_escaped_and_restored_for_search(provider, preferred_name,
     assert http_get.call_args.kwargs['params']['q'] == preferred_name
 
 
-@pytest.mark.parametrize('search', [
-    'Research & Development', 'Research &amp; Development', 'x &lt; y', 'Literal &#39; expression',
-])
+@pytest.mark.parametrize(
+    'search',
+    [
+        'Research & Development',
+        'Research &amp; Development',
+        'x &lt; y',
+        'Literal &#39; expression',
+    ],
+)
 def test_typed_search_preserves_literal_entities(provider, search, http_get):
     provider.get_options(None, search=search)
     assert http_get.call_args.kwargs['params']['q'] == search
@@ -66,7 +79,9 @@ def test_link_target_is_rendered_from_settings_without_changing_cached_results(s
     first = provider.get_options(None, search=search)
     first_link = ElementTree.fromstring(f'<span>{first[0]["text"]}</span>').find('a')
     assert first_link.attrib == {
-        'href': record()['id'], 'target': '_blank', 'rel': 'noopener noreferrer',
+        'href': record()['id'],
+        'target': '_blank',
+        'rel': 'noopener noreferrer',
     }
     assert first_link.text == record()['gndIdentifier']
 
@@ -84,9 +99,18 @@ def test_link_target_is_rendered_from_settings_without_changing_cached_results(s
     http_get.assert_called_once()
 
 
-@pytest.mark.parametrize('occupations', [
-    None, [], [{}], [None], {'label': 'occupation'}, [{'label': None}], [{'label': 1}],
-])
+@pytest.mark.parametrize(
+    'occupations',
+    [
+        None,
+        [],
+        [{}],
+        [None],
+        {'label': 'occupation'},
+        [{'label': None}],
+        [{'label': 1}],
+    ],
+)
 def test_optional_occupations(provider, occupations):
     text = provider.get_text({**record(), 'professionOrOccupation': occupations})
     label = ElementTree.fromstring(f'<span>{text}</span>')
@@ -105,9 +129,12 @@ def test_identifier_restoration_bypasses_keyword_length_and_uses_record_cache(se
     settings.GND_SEARCH_MIN_LEN = 20
     http_get.return_value = response(record())
     for identifier in ('2129905-5', record()['id']):
-        assert provider.get_options(None, search=identifier) == [{
-            'id': '2129905-5', 'text': provider.get_text(record()),
-        }]
+        assert provider.get_options(None, search=identifier) == [
+            {
+                'id': '2129905-5',
+                'text': provider.get_text(record()),
+            }
+        ]
     http_get.assert_called_once()
 
 

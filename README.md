@@ -384,3 +384,29 @@ supported. Local autocomplete always stays offline.
 The package requires Python 3.12+. Hatchling and hatch-vcs derive built package
 versions from Git tags; source checkouts use a placeholder until built. Release
 builds need full Git history/tags. Do not edit the generated `_version.py`.
+
+
+Additional general-provider search parameters
+---------------------------------------------
+
+`GND_PARAMS` adds parameters to the general lobid provider's search requests:
+
+```python
+GND_PARAMS = {'filter': '+(type:PlaceOrGeographicName)'}
+```
+
+Configured entries override default parameters, including `q` and `format`.
+Use JSON output for compatible option results. The effective parameters are
+included in cache keys. This setting does not affect identifier lookups or the
+specialized keyword providers, which enforce their own subject-heading searches.
+
+
+The CI suite also installs the built wheel with its local extra into a fresh
+virtual environment outside the source checkout. It verifies package/version and
+legal-file inclusion, then runs the standalone CLI's build, search, and status
+commands without Django or RDMO installed. To run it locally after building:
+
+```bash
+python -m build
+python tests/wheel_smoke.py dist
+```

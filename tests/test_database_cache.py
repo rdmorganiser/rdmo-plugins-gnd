@@ -49,14 +49,20 @@ def test_sites_and_independent_cache_instances_share_one_database_entry(settings
     settings.MULTISITE = True
     settings.SITE_ID = 1
     first = provider.get_options(
-        SimpleNamespace(pk=1), search='Zeolite', user=SimpleNamespace(pk=1), site=SimpleNamespace(pk=1),
+        SimpleNamespace(pk=1),
+        search='Zeolite',
+        user=SimpleNamespace(pk=1),
+        site=SimpleNamespace(pk=1),
     )
     second_cache = DatabaseCache('test_gnd_cache', settings.CACHES['gnd'])
     second_provider = GNDProvider('gnd', 'GND', 'rdmo_gnd.providers.GNDProvider')
     settings.SITE_ID = 2
     mocker.patch('rdmo_gnd.cache.caches', {'gnd': second_cache})
     second = second_provider.get_options(
-        SimpleNamespace(pk=2), search='Zeolite', user=SimpleNamespace(pk=2), site=SimpleNamespace(pk=2),
+        SimpleNamespace(pk=2),
+        search='Zeolite',
+        user=SimpleNamespace(pk=2),
+        site=SimpleNamespace(pk=2),
     )
     assert first == second
     http_get.assert_called_once()
@@ -66,7 +72,10 @@ def test_sites_and_independent_cache_instances_share_one_database_entry(settings
 
 
 def test_keyword_queries_share_normalized_database_cache_entries_between_sites(
-    settings, mocker, keyword_provider, http_get,
+    settings,
+    mocker,
+    keyword_provider,
+    http_get,
 ):
     http_get.return_value = sru_response([subject_record()])
     settings.SITE_ID = 1
@@ -165,6 +174,11 @@ def test_expired_entry_cleanup_failure_protects_read_and_write_transactions(sett
     assert 'Could not read GND cache' in caplog.text
     assert http_get.call_count == 2
     for alias in ('default', 'cache'):
-        assert Site.objects.using(alias).filter(
-            domain__in=['before-cleanup.example', 'after-cleanup.example'],
-        ).count() == 2
+        assert (
+            Site.objects.using(alias)
+            .filter(
+                domain__in=['before-cleanup.example', 'after-cleanup.example'],
+            )
+            .count()
+            == 2
+        )

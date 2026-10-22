@@ -30,7 +30,9 @@ def gnd_handler(signal, sender, instance=None, **kwargs):
         if 'gndIdentifier' in attribute_map and instance.attribute.uri == attribute_map['gndIdentifier']:
             required_paths = tuple(path for path in attribute_map if path not in ('gndIdentifier', 'lookup'))
             data = get_gnd_record(
-                instance.external_id, source=attribute_map.get('lookup', 'lobid'), required_paths=required_paths,
+                instance.external_id,
+                source=attribute_map.get('lookup', 'lobid'),
+                required_paths=required_paths,
             )
             if data is None:
                 return

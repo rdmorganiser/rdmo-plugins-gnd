@@ -33,7 +33,9 @@ def keyword_provider():
 @pytest.fixture
 def synonym_provider():
     return GNDKeywordSynonymProvider(
-        'gnd_keyword_synonyms', 'GND Keyword Synonyms', 'rdmo_gnd.providers.GNDKeywordSynonymProvider',
+        'gnd_keyword_synonyms',
+        'GND Keyword Synonyms',
+        'rdmo_gnd.providers.GNDKeywordSynonymProvider',
     )
 
 

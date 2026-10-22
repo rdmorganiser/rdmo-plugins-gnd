@@ -34,8 +34,10 @@ def xml_response(content, status=200):
 
 def subject_record(identifier='4008186-2', name='Brennstoff', entity_type='SubjectHeadingSensoStricto'):
     return {
-        'id': f'https://d-nb.info/gnd/{identifier}', 'gndIdentifier': identifier,
-        'preferredName': name, 'type': [entity_type],
+        'id': f'https://d-nb.info/gnd/{identifier}',
+        'gndIdentifier': identifier,
+        'preferredName': name,
+        'type': [entity_type],
     }
 
 

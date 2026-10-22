@@ -40,20 +40,34 @@ def test_remote_metadata_uses_exact_dated_filename_and_count():
         snapshot_metadata(listing, 'bad manifest')
 
 
-@pytest.mark.parametrize('changes', [
-    {'records_parsed': 208434}, {'concepts_imported': 100},
-    {'concepts_imported': 200000, 'records_skipped': 8435},
-])
+@pytest.mark.parametrize(
+    'changes',
+    [
+        {'records_parsed': 208434},
+        {'concepts_imported': 100},
+        {'concepts_imported': 200000, 'records_skipped': 8435},
+    ],
+)
 def test_validation_rejects_incomplete_imports(changes):
-    metadata = {'expected_records': 208435, 'records_parsed': 208435, 'concepts_imported': 208435,
-                    'records_filtered': 0, 'records_skipped': 0}
+    metadata = {
+        'expected_records': 208435,
+        'records_parsed': 208435,
+        'concepts_imported': 208435,
+        'records_filtered': 0,
+        'records_skipped': 0,
+    }
     with pytest.raises(IndexErrorBase):
         validate_import({**metadata, **changes})
 
 
 def test_validation_compares_previous_generation():
-    metadata = {'expected_records': 208435, 'records_parsed': 208435, 'concepts_imported': 208435,
-                    'records_filtered': 0, 'records_skipped': 0}
+    metadata = {
+        'expected_records': 208435,
+        'records_parsed': 208435,
+        'concepts_imported': 208435,
+        'records_filtered': 0,
+        'records_skipped': 0,
+    }
     validate_import(metadata)
     with pytest.raises(IndexErrorBase, match='10 percent'):
         validate_import(metadata, {'concepts_imported': 300000})
@@ -145,8 +159,7 @@ def test_download_hash_verification_and_reuse(tmp_path, mocker):
     content = gzip.compress(FIXTURE.read_bytes())
     session = mocker.Mock()
     session.get.return_value = response_context(mocker, content=content)
-    source = {'source_url': 'https://example.org/' + FILENAME,
-              'source_sha256': hashlib.sha256(content).hexdigest()}
+    source = {'source_url': 'https://example.org/' + FILENAME, 'source_sha256': hashlib.sha256(content).hexdigest()}
     target = download(session, source, tmp_path)
     assert target.read_bytes() == content
     assert download(session, source, tmp_path) == target
@@ -161,9 +174,12 @@ def test_download_hash_verification_and_reuse(tmp_path, mocker):
 @pytest.fixture
 def mocked_remote(tmp_path, mocker):
     content = gzip.compress(FIXTURE.read_bytes())
-    source = {'source_url': 'https://example.org/' + FILENAME,
-              'source_sha256': hashlib.sha256(content).hexdigest(),
-              'source_snapshot_date': '2026-10-13', 'expected_records': 5}
+    source = {
+        'source_url': 'https://example.org/' + FILENAME,
+        'source_sha256': hashlib.sha256(content).hexdigest(),
+        'source_snapshot_date': '2026-10-13',
+        'expected_records': 5,
+    }
     mocker.patch('rdmo_gnd.index.update.fetch_metadata', return_value={'text': ''})
     mocker.patch('rdmo_gnd.index.update.snapshot_metadata', return_value=source)
     session = mocker.MagicMock()
@@ -224,7 +240,7 @@ def test_corrupt_archive_and_failed_download_preserve_active(tmp_path, mocked_re
     mocker.patch('rdmo_gnd.index.update.validate_import')
     update_index(tmp_path)
     generation = (tmp_path / 'current.sqlite').resolve()
-    cached, = (tmp_path / 'downloads').glob('*.gz')
+    (cached,) = (tmp_path / 'downloads').glob('*.gz')
     cached.write_bytes(b'damaged archive')
     session.get.side_effect = requests.Timeout('simulated timeout')
     with pytest.raises(requests.Timeout):
@@ -232,15 +248,18 @@ def test_corrupt_archive_and_failed_download_preserve_active(tmp_path, mocked_re
     assert (tmp_path / 'current.sqlite').resolve() == generation
 
 
-def test_incompatible_generation_rebuilds_from_cached_source(tmp_path, mocked_remote, mocker):
+@pytest.mark.parametrize('key,version', [('schema_version', 1), ('importer_version', 1), ('schema_version', 999)])
+def test_incompatible_generation_rebuilds_from_cached_source(tmp_path, mocked_remote, mocker, key, version):
     mocker.patch('rdmo_gnd.index.update.validate_import')
     update_index(tmp_path)
     active = (tmp_path / 'current.sqlite').resolve()
     # Deliberately damage a test-only artifact; published deployment files stay immutable.
     with sqlite3.connect(active) as connection:
-        connection.execute("UPDATE metadata SET value = '999' WHERE key = 'schema_version'")
+        connection.execute('UPDATE metadata SET value = ? WHERE key = ?', (str(version), key))
     assert update_index(tmp_path)['changed'] is True
     assert GNDIndex(tmp_path / 'current.sqlite').get('4008186-2')
+    _source, session = mocked_remote
+    assert session.get.call_count == 1
 
 
 def test_disk_limit_preserves_current(tmp_path, mocked_remote, mocker):

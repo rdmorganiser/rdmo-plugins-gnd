@@ -36,7 +36,9 @@ def test_keyword_labels_are_escaped_and_restored_with_configured_links(settings,
     assert [element.tag for element in rendered.iter()] == ['span', 'a']
     assert ''.join(rendered.itertext()) == f'{item["preferredName"]} [4434275-5]'
     assert rendered.find('a').attrib == {
-        'href': item['id'], 'target': '_self', 'rel': 'noopener noreferrer',
+        'href': item['id'],
+        'target': '_self',
+        'rel': 'noopener noreferrer',
     }
     assert keyword_provider.get_search(text) == item['preferredName']
 
@@ -46,7 +48,9 @@ def test_keyword_labels_are_escaped_and_restored_with_configured_links(settings,
 
 
 def test_keyword_identifier_lookup_uses_sru_and_cached_labels_can_be_rendered_again(
-    settings, keyword_provider, http_get,
+    settings,
+    keyword_provider,
+    http_get,
 ):
     settings.GND_SEARCH_MIN_LEN = 100
     http_get.return_value = sru_response([subject_record()])
@@ -70,12 +74,19 @@ def test_keyword_upstream_failure_returns_empty_options(keyword_provider, http_g
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('provider_name,provider_class', [
-    ('GNDSRUKeywordsProvider', GNDSRUKeywordsProvider),
-    ('GNDKeywordSynonymProvider', GNDKeywordSynonymProvider),
-])
+@pytest.mark.parametrize(
+    'provider_name,provider_class',
+    [
+        ('GNDSRUKeywordsProvider', GNDSRUKeywordsProvider),
+        ('GNDKeywordSynonymProvider', GNDKeywordSynonymProvider),
+    ],
+)
 def test_rdmo_options_api_and_saved_values_support_the_additional_provider(
-    settings, http_get, django_user_model, provider_name, provider_class,
+    settings,
+    http_get,
+    django_user_model,
+    provider_name,
+    provider_class,
 ):
     provider_key = 'gnd_keyword_synonyms' if provider_class is GNDKeywordSynonymProvider else 'gnd_sru_keywords'
     settings.OPTIONSET_PROVIDERS = [
@@ -95,7 +106,10 @@ def test_rdmo_options_api_and_saved_values_support_the_additional_provider(
     question.optionsets.add(optionset)
     project = Project.objects.create(title='GND keywords', catalog=catalog)
     existing = Value.objects.create(
-        project=project, attribute=attribute, external_id='118540238', text='Existing person label',
+        project=project,
+        attribute=attribute,
+        external_id='118540238',
+        text='Existing person label',
     )
 
     optionset.provider_key = provider_key
@@ -106,7 +120,8 @@ def test_rdmo_options_api_and_saved_values_support_the_additional_provider(
     assert optionset.has_refresh
     is_synonym_provider = provider_class is GNDKeywordSynonymProvider
     http_get.return_value = (
-        response({'totalItems': 1, 'member': [subject_record()]}) if is_synonym_provider
+        response({'totalItems': 1, 'member': [subject_record()]})
+        if is_synonym_provider
         else sru_response([subject_record()])
     )
     user = django_user_model.objects.create_user(username='gnd-admin', is_superuser=True, is_staff=True)
@@ -121,12 +136,19 @@ def test_rdmo_options_api_and_saved_values_support_the_additional_provider(
     assert 'Brennstoff' in option['text']
 
     selection = Value.objects.create(
-        project=project, attribute=attribute, collection_index=1, external_id=option['id'], text=option['text'],
+        project=project,
+        attribute=attribute,
+        collection_index=1,
+        external_id=option['id'],
+        text=option['text'],
     )
     selection.refresh_from_db()
     http_get.return_value = response(subject_record()) if is_synonym_provider else sru_response([subject_record()])
-    assert optionset.provider.get_options(project, search=selection.external_id) == [{
-        'id': selection.external_id, 'text': selection.text,
-    }]
+    assert optionset.provider.get_options(project, search=selection.external_id) == [
+        {
+            'id': selection.external_id,
+            'text': selection.text,
+        }
+    ]
     existing.refresh_from_db()
     assert (existing.external_id, existing.text) == ('118540238', 'Existing person label')

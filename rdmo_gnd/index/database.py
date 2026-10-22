@@ -54,13 +54,31 @@ def build_index(source, output, metadata=None):
         with Database(output) as db:
             db.execute('PRAGMA foreign_keys = ON')
             db.execute('PRAGMA temp_store = FILE')
-            db['concept'].create({
-                'gnd_id': str, 'preferred_name': str, 'normalized': str, 'modified_at': str,
-            }, pk='gnd_id', not_null={'preferred_name', 'normalized'})
-            db['label'].create({
-                'id': int, 'gnd_id': str, 'value': str, 'normalized': str,
-                'kind': str, 'language': str, 'source': str, 'relation': str,
-            }, pk='id', foreign_keys=[('gnd_id', 'concept', 'gnd_id')], not_null={'gnd_id', 'value', 'kind'})
+            db['concept'].create(
+                {
+                    'gnd_id': str,
+                    'preferred_name': str,
+                    'normalized': str,
+                    'modified_at': str,
+                },
+                pk='gnd_id',
+                not_null={'preferred_name', 'normalized'},
+            )
+            db['label'].create(
+                {
+                    'id': int,
+                    'gnd_id': str,
+                    'value': str,
+                    'normalized': str,
+                    'kind': str,
+                    'language': str,
+                    'source': str,
+                    'relation': str,
+                },
+                pk='id',
+                foreign_keys=[('gnd_id', 'concept', 'gnd_id')],
+                not_null={'gnd_id', 'value', 'kind'},
+            )
             db['metadata'].create({'key': str, 'value': str}, pk='key')
             batch = []
             for concept in iter_concepts(source, stats):
@@ -75,12 +93,18 @@ def build_index(source, output, metadata=None):
             db['label'].create_index(['gnd_id'])
             db['label'].create_index(['normalized'])
             db['label'].enable_fts(
-                ['value'], fts_version='FTS5', tokenize='unicode61 remove_diacritics 2', create_triggers=False,
+                ['normalized'],
+                fts_version='FTS5',
+                tokenize='unicode61 remove_diacritics 2',
+                create_triggers=False,
             )
             db['label'].optimize()
             values = {
-                **(metadata or {}), **asdict(stats), 'schema_version': SCHEMA_VERSION,
-                'importer_version': IMPORTER_VERSION, 'built_at': datetime.now(UTC).isoformat(),
+                **(metadata or {}),
+                **asdict(stats),
+                'schema_version': SCHEMA_VERSION,
+                'importer_version': IMPORTER_VERSION,
+                'built_at': datetime.now(UTC).isoformat(),
             }
             db['metadata'].insert_all([{'key': key, 'value': json.dumps(value)} for key, value in values.items()])
             validate_database(db)
@@ -94,11 +118,29 @@ def build_index(source, output, metadata=None):
 
 def insert_batch(db, concepts):
     with db.atomic():
-        db['concept'].insert_all([{
-            'gnd_id': c.gnd_id, 'preferred_name': c.preferred_name,
-            'normalized': normalize(c.preferred_name), 'modified_at': c.modified_at,
-        } for c in concepts])
-        db['label'].insert_all([{
-            'gnd_id': c.gnd_id, 'value': label.value, 'normalized': normalize(label.value),
-            'kind': label.kind, 'language': label.language, 'source': label.source, 'relation': label.relation,
-        } for c in concepts for label in c.labels])
+        db['concept'].insert_all(
+            [
+                {
+                    'gnd_id': c.gnd_id,
+                    'preferred_name': c.preferred_name,
+                    'normalized': normalize(c.preferred_name),
+                    'modified_at': c.modified_at,
+                }
+                for c in concepts
+            ]
+        )
+        db['label'].insert_all(
+            [
+                {
+                    'gnd_id': c.gnd_id,
+                    'value': label.value,
+                    'normalized': normalize(label.value),
+                    'kind': label.kind,
+                    'language': label.language,
+                    'source': label.source,
+                    'relation': label.relation,
+                }
+                for c in concepts
+                for label in c.labels
+            ]
+        )

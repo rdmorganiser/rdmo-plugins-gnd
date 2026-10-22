@@ -19,6 +19,7 @@ class GNDLocalClient:
             return None
         try:
             from .index.search import GNDIndex
+
             return getattr(GNDIndex(self.path), operation)(*args)
         except (ImportError, OSError, sqlite3.Error, ValueError) as error:
             logger.warning('Local GND index unavailable (%s): %s', type(error).__name__, error)

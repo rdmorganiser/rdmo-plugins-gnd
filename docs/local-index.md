@@ -160,7 +160,10 @@ It uses `024 $a` with `$2=gnd`, never the internal `001` identifier.
 Preferred `150`, variant `450`, and cross-vocabulary `750` labels retain meaningful
 qualifications and subdivisions. `750` vocabulary, language, and relationship
 (including `EQ` and `=EQ`) are preserved. Related terms in `550` are not indexed.
-Labels are normalized to NFC, with whitespace/case normalization for ranking.
+Original display labels are normalized to NFC. FTS5 indexes whitespace-normalized,
+casefolded labels, and queries use the same normalization before tokenization and
+ranking. For example, `Straße`, `STRASSE`, and `strasse` retrieve the same concepts
+while display labels retain their original spelling.
 English coverage depends on curated mappings; there is no machine translation.
 Consult [DNB's data terms](https://data.dnb.de/opendata/) when using or
 redistributing data, especially independently distributed vocabulary mappings.
@@ -214,3 +217,13 @@ These measurements describe that development host, rather than a deployment
 capacity guarantee. The same index was also read successfully using Ubuntu's
 Python 3.12/SQLite build. A second update detected unchanged data and did not
 fetch the archive or rebuild.
+
+
+### Version-2 indexes
+
+The normalized full-text index uses schema and importer version **2**. Version-1
+artifacts must be rebuilt; they are never migrated or modified in place. Before
+first deploying this provider, run `rdmo-gnd update` using the updated package and
+verify `schema_version` and `importer_version` in `rdmo-gnd status --json`. An
+unchanged archive is reused after checksum verification, but it is rebuilt for the
+new version. The provider reports older schemas as unavailable until rebuilt.

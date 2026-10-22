@@ -49,7 +49,8 @@ def _parse_record(record):
         uri.removeprefix(namespace)
         for element in resource.findall('rdf:type', NAMESPACES)
         for uri in (element.get(RDF_RESOURCE, ''),)
-        for namespace in GND_NAMESPACES if uri.startswith(namespace)
+        for namespace in GND_NAMESPACES
+        if uri.startswith(namespace)
     }
     if not types:
         raise ValueError('Missing GND entity type')
@@ -145,12 +146,15 @@ class GNDSRUClient(GNDHTTPClient):
 
         def validate(data):
             return (
-                _is_subject_response(data) and len(data['member']) <= limit
+                _is_subject_response(data)
+                and len(data['member']) <= limit
                 and (not is_identifier or all(item['gndIdentifier'] == value for item in data['member']))
             )
 
         params = {
-            'version': '1.1', 'operation': 'searchRetrieve', 'recordSchema': 'RDFxml',
+            'version': '1.1',
+            'operation': 'searchRetrieve',
+            'recordSchema': 'RDFxml',
             'maximumRecords': limit,
             'query': f'dnb.{index} = {_cql_literal(value)} and dnb.bbg = Ts*',
         }

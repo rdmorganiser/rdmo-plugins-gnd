@@ -73,8 +73,10 @@ def snapshot_metadata(listing, manifest):
         raise IndexErrorBase('Expected record count is missing from the dated DNB directory entry.')
     snapshot_date = datetime.strptime(date, '%Y%m%d').date().isoformat()
     return {
-        'source_url': SOURCE_BASE + filename, 'source_sha256': checksum,
-        'source_snapshot_date': snapshot_date, 'expected_records': int(re.sub(r'\D', '', count[1])),
+        'source_url': SOURCE_BASE + filename,
+        'source_sha256': checksum,
+        'source_snapshot_date': snapshot_date,
+        'expected_records': int(re.sub(r'\D', '', count[1])),
     }
 
 
@@ -92,8 +94,11 @@ def fetch_metadata(session, url, cached):
             raise IndexErrorBase('DNB returned 304 without cached metadata.')
         if len(response.content) > 2 * 1024 * 1024:
             raise IndexErrorBase('DNB metadata response is unexpectedly large.')
-        return {'text': response.text, 'etag': response.headers.get('ETag'),
-                'last_modified': response.headers.get('Last-Modified')}
+        return {
+            'text': response.text,
+            'etag': response.headers.get('ETag'),
+            'last_modified': response.headers.get('Last-Modified'),
+        }
 
 
 def sha256(path):
@@ -226,9 +231,13 @@ def _update_index(directory, force):
             remote['manifest'] = fetch_metadata(session, MANIFEST_URL, remote.get('manifest', {}))
             source = snapshot_metadata(remote['listing']['text'], remote['manifest']['text'])
             previous = current_metadata(directory)
-            if (not force and previous and previous.get('source_sha256') == source['source_sha256']
-                    and previous.get('schema_version') == SCHEMA_VERSION
-                    and previous.get('importer_version') == IMPORTER_VERSION):
+            if (
+                not force
+                and previous
+                and previous.get('source_sha256') == source['source_sha256']
+                and previous.get('schema_version') == SCHEMA_VERSION
+                and previous.get('importer_version') == IMPORTER_VERSION
+            ):
                 # Metadata alone does not establish that an active database is usable.
                 try:
                     validate_search(directory / 'current.sqlite')
@@ -242,10 +251,17 @@ def _update_index(directory, force):
                 raise IndexErrorBase('At least 2 GiB free disk space is required to build a production index.')
             archive = download(session, source, directory / 'downloads')
         metadata = build_index(archive, staging, source)
-        state['last_import'] = {key: metadata[key] for key in (
-            'expected_records', 'records_parsed', 'concepts_imported', 'records_filtered', 'records_skipped',
-            'skipped_reasons',
-        )}
+        state['last_import'] = {
+            key: metadata[key]
+            for key in (
+                'expected_records',
+                'records_parsed',
+                'concepts_imported',
+                'records_filtered',
+                'records_skipped',
+                'skipped_reasons',
+            )
+        }
         validate_import(metadata, previous)
         validate_search(staging)
         generation = publish(directory, staging)

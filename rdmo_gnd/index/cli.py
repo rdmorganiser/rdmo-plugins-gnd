@@ -29,17 +29,22 @@ def main(argv=None):
     try:
         from .database import build_index
         from .search import GNDIndex
+
         if args.command == 'build':
             data = build_index(args.source, args.output)
         elif args.command == 'update':
             from .update import update_index
+
             data = update_index(args.directory, force=args.force)
         elif args.command == 'search':
             data = GNDIndex(args.directory / 'current.sqlite').search(args.query, limit=args.limit)
         else:
             from .update import load_state
-            data = {'active': GNDIndex(args.directory / 'current.sqlite').metadata(),
-                    'state': load_state(args.directory)}
+
+            data = {
+                'active': GNDIndex(args.directory / 'current.sqlite').metadata(),
+                'state': load_state(args.directory),
+            }
         if args.command == 'status' and not args.json:
             print('Active GND index:')
             for name, value in data['active'].items():

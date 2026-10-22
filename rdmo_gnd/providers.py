@@ -45,7 +45,9 @@ class GNDProvider(Provider):
         if link_target:
             return format_html(
                 '<a href="{}" target="{}" rel="noopener noreferrer">{}</a>',
-                item['id'], link_target, item['gndIdentifier'],
+                item['id'],
+                link_target,
+                item['gndIdentifier'],
             )
         return format_html('<a href="{}">{}</a>', item['id'], item['gndIdentifier'])
 

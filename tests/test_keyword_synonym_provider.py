@@ -8,7 +8,9 @@ from .helpers import record, response, search_response, subject_record
 
 
 def test_synonym_search_uses_lobid_name_fields_and_displays_the_preferred_name(
-    settings, synonym_provider, http_get,
+    settings,
+    synonym_provider,
+    http_get,
 ):
     settings.GND_PROVIDER_URL = 'https://example.org/gnd'
     settings.GND_PROVIDER_HEADERS = {'User-Agent': 'Synonym tests', 'Accept-Language': 'en'}
@@ -26,17 +28,22 @@ def test_synonym_search_uses_lobid_name_fields_and_displays_the_preferred_name(
         'https://example.org/gnd/search',
         params={
             'q': 'preferredName:"fuel pellet" OR variantName:"fuel pellet"',
-            'filter': 'type:SubjectHeading', 'format': 'json',
+            'filter': 'type:SubjectHeading',
+            'format': 'json',
         },
-        headers={'User-Agent': 'Synonym tests', 'Accept-Language': 'en'}, timeout=(2, 8),
+        headers={'User-Agent': 'Synonym tests', 'Accept-Language': 'en'},
+        timeout=(2, 8),
     )
 
 
-@pytest.mark.parametrize('query,escaped', [
-    ('Fuel "pellet"', r'Fuel \"pellet\"'),
-    (r'fuel\pellet', r'fuel\\pellet'),
-    ('fuel" OR type:Person OR preferredName:"', r'fuel\" OR type:Person OR preferredName:\"'),
-])
+@pytest.mark.parametrize(
+    'query,escaped',
+    [
+        ('Fuel "pellet"', r'Fuel \"pellet\"'),
+        (r'fuel\pellet', r'fuel\\pellet'),
+        ('fuel" OR type:Person OR preferredName:"', r'fuel\" OR type:Person OR preferredName:\"'),
+    ],
+)
 def test_search_input_cannot_escape_the_name_fields(query, escaped, http_get):
     http_get.return_value = response({'totalItems': 0, 'member': []})
     GNDKeywordSynonymClient().search(query)
@@ -45,11 +52,20 @@ def test_search_input_cannot_escape_the_name_fields(query, escaped, http_get):
     assert params['filter'] == 'type:SubjectHeading'
 
 
-@pytest.mark.parametrize('entity_type', [
-    'DifferentiatedPerson', 'CorporateBody', 'PlaceOrGeographicName', 'Work', 'ConferenceOrEvent',
-])
+@pytest.mark.parametrize(
+    'entity_type',
+    [
+        'DifferentiatedPerson',
+        'CorporateBody',
+        'PlaceOrGeographicName',
+        'Work',
+        'ConferenceOrEvent',
+    ],
+)
 def test_search_discards_non_subjects_even_if_the_service_ignores_the_filter(
-    synonym_provider, http_get, entity_type,
+    synonym_provider,
+    http_get,
+    entity_type,
 ):
     excluded = subject_record('118540238', 'Excluded record', entity_type)
     http_get.return_value = response({'totalItems': 2, 'member': [excluded, subject_record()]})
@@ -57,12 +73,24 @@ def test_search_discards_non_subjects_even_if_the_service_ignores_the_filter(
     assert [option['id'] for option in options] == ['4008186-2']
 
 
-@pytest.mark.parametrize('types', [
-    ['DifferentiatedPerson'], ['CorporateBody'], ['PlaceOrGeographicName'], ['Work'],
-    None, [], 'SubjectHeading', [None], [{}],
-])
+@pytest.mark.parametrize(
+    'types',
+    [
+        ['DifferentiatedPerson'],
+        ['CorporateBody'],
+        ['PlaceOrGeographicName'],
+        ['Work'],
+        None,
+        [],
+        'SubjectHeading',
+        [None],
+        [{}],
+    ],
+)
 def test_identifier_lookup_rejects_out_of_scope_records_cached_by_the_general_client(
-    synonym_provider, http_get, types,
+    synonym_provider,
+    http_get,
+    types,
 ):
     item = {**record(), 'type': types}
     http_get.return_value = response(item)
@@ -72,11 +100,21 @@ def test_identifier_lookup_rejects_out_of_scope_records_cached_by_the_general_cl
     http_get.assert_called_once()
 
 
-@pytest.mark.parametrize('entity_type', [
-    'SubjectHeadingSensoStricto', 'SoftwareProduct', 'NomenclatureInBiologyOrChemistry', 'Language', 'GroupOfPersons',
-])
+@pytest.mark.parametrize(
+    'entity_type',
+    [
+        'SubjectHeadingSensoStricto',
+        'SoftwareProduct',
+        'NomenclatureInBiologyOrChemistry',
+        'Language',
+        'GroupOfPersons',
+    ],
+)
 def test_subject_subtypes_can_be_restored_by_identifier_and_url_despite_the_minimum_length(
-    settings, synonym_provider, http_get, entity_type,
+    settings,
+    synonym_provider,
+    http_get,
+    entity_type,
 ):
     settings.GND_SEARCH_MIN_LEN = 100
     item = subject_record(entity_type=entity_type)
@@ -112,3 +150,13 @@ def test_synonym_request_failures_return_no_options_and_are_not_cached(synonym_p
     assert [option['id'] for option in options] == ['4008186-2']
     assert synonym_provider.get_options(None, search='fuel') == options
     assert http_get.call_count == 2
+
+
+def test_global_params_do_not_override_synonym_subject_search(settings, synonym_provider, http_get):
+    settings.GND_PARAMS = {'q': 'person', 'filter': 'type:Person', 'size': 1}
+    synonym_provider.get_options(None, search='fuel')
+    assert http_get.call_args.kwargs['params'] == {
+        'q': 'preferredName:"fuel" OR variantName:"fuel"',
+        'filter': 'type:SubjectHeading',
+        'format': 'json',
+    }

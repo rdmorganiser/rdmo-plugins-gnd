@@ -94,13 +94,20 @@ def parse_record(record, stats):
         if not value or tag not in ('450', '750'):
             continue
         language = next((value[2:] for value in subfields(element, '9') if value.startswith('L:')), '')
-        labels.append(GNDLabel(
-            value, 'variant' if tag == '450' else 'equivalent', language,
-            first(element, '2') or ('gnd' if tag == '450' else ''), first(element, '4'),
-        ))
+        labels.append(
+            GNDLabel(
+                value,
+                'variant' if tag == '450' else 'equivalent',
+                language,
+                first(element, '2') or ('gnd' if tag == '450' else ''),
+                first(element, '4'),
+            )
+        )
     stats.concepts_imported += 1
     return GNDConcept(
-        identifier, name, list(dict.fromkeys(labels)),
+        identifier,
+        name,
+        list(dict.fromkeys(labels)),
         record.findtext(f'{MARC}controlfield[@tag="005"]', default=''),
     )
 
@@ -112,7 +119,11 @@ def iter_concepts(source, stats=None):
     with opener(path, 'rb') as stream:
         stack = []
         for event, element in iterparse(
-            stream, events=('start', 'end'), forbid_dtd=True, forbid_entities=True, forbid_external=True,
+            stream,
+            events=('start', 'end'),
+            forbid_dtd=True,
+            forbid_entities=True,
+            forbid_external=True,
         ):
             if event == 'start':
                 stack.append(element)

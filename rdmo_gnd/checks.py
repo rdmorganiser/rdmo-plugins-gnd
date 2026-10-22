@@ -29,6 +29,7 @@ def check_local_index(app_configs, **kwargs):
         import defusedxml  # noqa: F401
 
         from .index.search import GNDIndex
+
         metadata = GNDIndex(path).metadata()
         # Exercise FTS5 as well as schema compatibility without an expensive integrity scan.
         GNDIndex(path).search('Brennstoff', limit=1)

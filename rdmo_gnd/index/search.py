@@ -1,7 +1,6 @@
 """Read-only local search and exact GND identifier lookup."""
 
 import re
-import unicodedata
 
 from sqlite_utils.db import NotFoundError
 
@@ -9,7 +8,7 @@ from ..utils import get_identifier
 from .database import open_index, read_metadata
 from .marc import normalize
 
-SEARCH_SQL = '''
+SEARCH_SQL = """
 WITH hits AS MATERIALIZED (
     SELECT l.gnd_id, l.id, c.preferred_name, c.normalized AS preferred_normalized,
         CASE
@@ -30,25 +29,25 @@ WITH hits AS MATERIALIZED (
 )
 SELECT gnd_id, preferred_name FROM ranked WHERE position = 1
 ORDER BY tier, score, preferred_normalized, gnd_id LIMIT :limit
-'''
+"""
 
 
 def fts_query(query):
     if len(query) > 200:
         return None
     # Tokenize before quoting so that typed FTS operators are ordinary search terms.
-    query = unicodedata.normalize('NFC', query)
+    query = normalize(query)
     tokens = re.findall(r'[^\W_]+', query, re.UNICODE)
     if not tokens or len(tokens) > 12:
         return None
-    return ' AND '.join('"' + token + '"' + ('*' if i == len(tokens) - 1 else '')
-                        for i, token in enumerate(tokens))
+    return ' AND '.join('"' + token + '"' + ('*' if i == len(tokens) - 1 else '') for i, token in enumerate(tokens))
 
 
 def as_record(concept):
     return {
         'id': f'https://d-nb.info/gnd/{concept["gnd_id"]}',
-        'gndIdentifier': concept['gnd_id'], 'preferredName': concept['preferred_name'],
+        'gndIdentifier': concept['gnd_id'],
+        'preferredName': concept['preferred_name'],
     }
 
 
@@ -67,9 +66,17 @@ class GNDIndex:
         if expression is None:
             return []
         with open_index(self.path) as db:
-            return [as_record(row) for row in db.query(SEARCH_SQL, {
-                'query': normalize(query), 'fts': expression, 'limit': limit,
-            })]
+            return [
+                as_record(row)
+                for row in db.query(
+                    SEARCH_SQL,
+                    {
+                        'query': normalize(query),
+                        'fts': expression,
+                        'limit': limit,
+                    },
+                )
+            ]
 
     def get(self, identifier):
         identifier = get_identifier(identifier)
@@ -81,10 +88,13 @@ class GNDIndex:
             except NotFoundError:
                 return None
             record = as_record(concept)
-            variants = [row['value'] for row in db.query(
-                "SELECT DISTINCT value FROM label WHERE gnd_id = :id AND kind = 'variant' ORDER BY value",
-                {'id': identifier},
-            )]
+            variants = [
+                row['value']
+                for row in db.query(
+                    "SELECT DISTINCT value FROM label WHERE gnd_id = :id AND kind = 'variant' ORDER BY value",
+                    {'id': identifier},
+                )
+            ]
             if variants:
                 record['variantName'] = variants
             return record

@@ -1,7 +1,7 @@
 """Django-independent tools for immutable local GND indexes (optional extra)."""
 
-SCHEMA_VERSION = 1
-IMPORTER_VERSION = 1
+SCHEMA_VERSION = 2
+IMPORTER_VERSION = 2
 
 
 class IndexErrorBase(ValueError):

@@ -12,7 +12,9 @@ from .helpers import record, response
 
 def test_provider_formats_search_ids_and_saved_labels(local_index, http_get):
     provider = GNDLocalKeywordsProvider(
-        'gnd_local_keywords', 'Local GND', 'rdmo_gnd.providers.GNDLocalKeywordsProvider',
+        'gnd_local_keywords',
+        'Local GND',
+        'rdmo_gnd.providers.GNDLocalKeywordsProvider',
     )
     option = next(item for item in provider.get_options(None, search='fuel') if item['id'] == '4008186-2')
     assert 'Brennstoff' in option['text']
@@ -34,15 +36,18 @@ def test_provider_minimum_length_and_missing_index(settings, local_index, http_g
     http_get.assert_not_called()
 
 
-@pytest.mark.parametrize('source, paths, external', [
-    ('lobid', (), True),
-    ('local', ('definition',), False),
-    ('auto', ('preferredName',), False),
-    ('auto', ('variantName/999',), False),
-    ('auto', ('definition',), True),
-    ('auto', ('type/0',), True),
-    ('auto', ('preferredName/*',), True),
-])
+@pytest.mark.parametrize(
+    'source, paths, external',
+    [
+        ('lobid', (), True),
+        ('local', ('definition',), False),
+        ('auto', ('preferredName',), False),
+        ('auto', ('variantName/999',), False),
+        ('auto', ('definition',), True),
+        ('auto', ('type/0',), True),
+        ('auto', ('preferredName/*',), True),
+    ],
+)
 def test_resolver_policies_and_capability_checks(local_index, http_get, source, paths, external):
     http_get.return_value = response(record())
     data = get_gnd_record('4008186-2', source=source, required_paths=paths)
@@ -69,20 +74,32 @@ def test_invalid_identifier_never_requests_external_service(http_get):
 
 
 def test_full_keyword_selection_updates_mapping_without_http(local_index, settings, mocker, http_get):
-    settings.GND_PROVIDER_MAP = [{
-        'gndIdentifier': 'https://example.org/gnd', 'preferredName': 'https://example.org/name',
-        'variantName/999': 'https://example.org/missing', 'lookup': 'local',
-    }]
+    settings.GND_PROVIDER_MAP = [
+        {
+            'gndIdentifier': 'https://example.org/gnd',
+            'preferredName': 'https://example.org/name',
+            'variantName/999': 'https://example.org/missing',
+            'lookup': 'local',
+        }
+    ]
     attribute = mocker.patch('rdmo_gnd.handlers.Attribute.objects.get')
     update = mocker.patch('rdmo_gnd.handlers.Value.objects.update_or_create')
     instance = SimpleNamespace(
-        external_id='4008186-2', attribute=SimpleNamespace(uri='https://example.org/gnd'),
-        project=object(), set_prefix='1', set_index=2,
+        external_id='4008186-2',
+        attribute_id=1,
+        attribute=SimpleNamespace(uri='https://example.org/gnd'),
+        project=object(),
+        set_prefix='1',
+        set_index=2,
     )
     gnd_handler(None, None, instance=instance)
     update.assert_called_once_with(
-        project=instance.project, snapshot=None, attribute=attribute.return_value,
-        set_prefix='1', set_index=2, defaults={'text': 'Brennstoff'},
+        project=instance.project,
+        snapshot=None,
+        attribute=attribute.return_value,
+        set_prefix='1',
+        set_index=2,
+        defaults={'text': 'Brennstoff'},
     )
     attribute.assert_called_once_with(uri='https://example.org/name')
     http_get.assert_not_called()
@@ -140,7 +157,10 @@ def test_registered_local_provider_project_api_and_saved_selection(local_index, 
     assert option['id'] == '4008195-3'
     selected = Value.objects.create(project=project, attribute=attribute, external_id=option['id'], text=option['text'])
     selected.refresh_from_db()
-    assert optionset.provider.get_options(project, search=selected.external_id) == [{
-        'id': selected.external_id, 'text': selected.text,
-    }]
+    assert optionset.provider.get_options(project, search=selected.external_id) == [
+        {
+            'id': selected.external_id,
+            'text': selected.text,
+        }
+    ]
     http_get.assert_not_called()

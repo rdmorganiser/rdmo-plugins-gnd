@@ -26,8 +26,10 @@ def test_repeated_search_uses_cache_and_keeps_request_configuration(settings, ht
     assert first == search_response()
     assert first == second
     http_get.assert_called_once_with(
-        'https://lobid.org/gnd/search', params={'q': 'Zeolite', 'format': 'json'},
-        headers={'User-Agent': 'GND tests'}, timeout=(2, 8),
+        'https://lobid.org/gnd/search',
+        params={'q': 'Zeolite', 'format': 'json'},
+        headers={'User-Agent': 'GND tests'},
+        timeout=(2, 8),
     )
     assert ('rdmo_gnd.client', logging.DEBUG, 'GND search cache miss.') in caplog.record_tuples
     assert ('rdmo_gnd.client', logging.DEBUG, 'GND search cache hit.') in caplog.record_tuples
@@ -45,8 +47,10 @@ def test_record_lookups_are_cached_across_identifier_formats(http_get):
     assert GNDClient().get_record('2129905-5') == record()
     assert GNDClient().get_record('https://d-nb.info/gnd/2129905-5') == record()
     http_get.assert_called_once_with(
-        'https://lobid.org/gnd/2129905-5', params={'format': 'json'},
-        headers={'User-Agent': DEFAULT_USER_AGENT}, timeout=(3, 10),
+        'https://lobid.org/gnd/2129905-5',
+        params={'format': 'json'},
+        headers={'User-Agent': DEFAULT_USER_AGENT},
+        timeout=(3, 10),
     )
 
 
@@ -117,9 +121,17 @@ def test_response_cache_can_be_replaced(settings, mocker, http_get, client_class
 
 
 @pytest.mark.parametrize('client_class', [GNDClient, GNDSRUClient])
-@pytest.mark.parametrize('cache_config', [
-    'unset', None, {}, {'timeout': 0}, {'alias': 'not-configured', 'timeout': 0},
-], ids=['unset', 'none', 'empty', 'zero-timeout', 'unused-alias'])
+@pytest.mark.parametrize(
+    'cache_config',
+    [
+        'unset',
+        None,
+        {},
+        {'timeout': 0},
+        {'alias': 'not-configured', 'timeout': 0},
+    ],
+    ids=['unset', 'none', 'empty', 'zero-timeout', 'unused-alias'],
+)
 def test_unconfigured_cache_fetches_directly(settings, mocker, http_get, caplog, client_class, cache_config):
     if cache_config == 'unset':
         del settings.GND_CACHE_CONFIG
@@ -152,11 +164,14 @@ def test_unconfigured_cache_fetches_directly(settings, mocker, http_get, caplog,
     assert not any('cache' in record.getMessage().lower() for record in caplog.records)
 
 
-@pytest.mark.parametrize('cache_config,alias,timeout', [
-    ({'alias': 'default'}, 'default', 43200),
-    ({'timeout': 60}, 'default', 60),
-    ({'alias': 'gnd', 'timeout': 120}, 'gnd', 120),
-])
+@pytest.mark.parametrize(
+    'cache_config,alias,timeout',
+    [
+        ({'alias': 'default'}, 'default', 43200),
+        ({'timeout': 60}, 'default', 60),
+        ({'alias': 'gnd', 'timeout': 120}, 'gnd', 120),
+    ],
+)
 def test_enabled_cache_config_is_normalized_without_changing_settings(settings, cache_config, alias, timeout):
     original = cache_config.copy()
     settings.GND_CACHE_CONFIG = cache_config
@@ -246,10 +261,15 @@ def test_conflicting_header_case_uses_the_effective_request_headers(settings, ht
 
 
 def test_http_error_logs_request_id_and_is_not_cached(http_get, caplog):
-    http_get.return_value = response({
-        'status': 500, 'error': 'Internal Server Error',
-        'message': 'private error detail', 'requestId': '38a49fb3-845858',
-    }, status=500)
+    http_get.return_value = response(
+        {
+            'status': 500,
+            'error': 'Internal Server Error',
+            'message': 'private error detail',
+            'requestId': '38a49fb3-845858',
+        },
+        status=500,
+    )
     assert GNDClient().search('private search term') is None
     assert '500' in caplog.text
     assert '38a49fb3-845858' in caplog.text
@@ -272,12 +292,21 @@ def test_invalid_json_logs_header_request_id_and_is_not_cached(http_get, caplog)
     assert http_get.call_count == 2
 
 
-@pytest.mark.parametrize('payload', [
-    None, [], {}, {'totalItems': 1}, {'totalItems': True, 'member': []},
-    {'totalItems': -1, 'member': []}, {'totalItems': 0, 'member': [record()]},
-    {'totalItems': 1, 'member': {}}, {'totalItems': 1, 'member': [{}]},
-    {'totalItems': 1, 'member': [{**record(), 'preferredName': None}]},
-])
+@pytest.mark.parametrize(
+    'payload',
+    [
+        None,
+        [],
+        {},
+        {'totalItems': 1},
+        {'totalItems': True, 'member': []},
+        {'totalItems': -1, 'member': []},
+        {'totalItems': 0, 'member': [record()]},
+        {'totalItems': 1, 'member': {}},
+        {'totalItems': 1, 'member': [{}]},
+        {'totalItems': 1, 'member': [{**record(), 'preferredName': None}]},
+    ],
+)
 def test_malformed_search_responses_are_not_cached(payload, http_get, caplog):
     http_get.return_value = response(payload)
     assert GNDClient().search('Zeolite') is None
@@ -346,24 +375,45 @@ def test_defaults(settings):
 INVALID_SETTINGS = {
     'GND_SEARCH_MIN_LEN': (0, -1, True, 3.5, '3'),
     'GND_CACHE_CONFIG': (
-        False, True, 0, '', [], [('alias', 'default')], 'default',
-        {'alias': 'missing'}, {'alias': ''}, {'alias': None}, {'alias': 1}, {'alias': False},
-        {'timeout': -1}, {'timeout': True}, {'timeout': None}, {'timeout': '43200'}, {'timeout': 1.5},
-        {'unknown': 1}, {1: 'value'}, {'alias': None, 'timeout': 0},
+        False,
+        True,
+        0,
+        '',
+        [],
+        [('alias', 'default')],
+        'default',
+        {'alias': 'missing'},
+        {'alias': ''},
+        {'alias': None},
+        {'alias': 1},
+        {'alias': False},
+        {'timeout': -1},
+        {'timeout': True},
+        {'timeout': None},
+        {'timeout': '43200'},
+        {'timeout': 1.5},
+        {'unknown': 1},
+        {1: 'value'},
+        {'alias': None, 'timeout': 0},
     ),
     'GND_PROVIDER_HEADERS': (
-        [], 'not a mapping', {1: 'value'}, {'X-Example': 1}, {b'\xff': 'value'},
-        {'X-Example': 'value\nother'}, {'X-Example': '\u2603'},
-        {'User-Agent': None}, {'user-agent': ''}, {'User-Agent': '  '},
+        [],
+        'not a mapping',
+        {1: 'value'},
+        {'X-Example': 1},
+        {b'\xff': 'value'},
+        {'X-Example': 'value\nother'},
+        {'X-Example': '\u2603'},
+        {'User-Agent': None},
+        {'user-agent': ''},
+        {'User-Agent': '  '},
     ),
     'GND_PROVIDER_URL': (None, 42, '', '   ', 'https://', 'not a URL', 'ftp://example.org', 'https://[invalid'),
     'GND_REQUEST_TIMEOUT': (0, -1, None, True, float('inf'), float('nan'), (), (1,), (1, 0), (1, 2, 3)),
 }
 
 
-@pytest.mark.parametrize('name,value', [
-    (name, value) for name, values in INVALID_SETTINGS.items() for value in values
-])
+@pytest.mark.parametrize('name,value', [(name, value) for name, values in INVALID_SETTINGS.items() for value in values])
 def test_invalid_configuration_is_reported(settings, name, value, http_get):
     setattr(settings, name, value)
     with pytest.raises(ImproperlyConfigured, match=name):
@@ -385,7 +435,10 @@ def test_checks_collect_independent_errors_without_requests_or_cache_access(sett
     errors = check_gnd_settings(None)
     assert len(errors) == 5
     assert {error.obj for error in errors} == {
-        'GND_PROVIDER_URL', 'GND_SEARCH_MIN_LEN', 'GND_PROVIDER_HEADERS', 'GND_CACHE_CONFIG',
+        'GND_PROVIDER_URL',
+        'GND_SEARCH_MIN_LEN',
+        'GND_PROVIDER_HEADERS',
+        'GND_CACHE_CONFIG',
     }
     with pytest.raises(ImproperlyConfigured, match='GND_PROVIDER_URL') as raised:
         GNDClient()
@@ -416,3 +469,38 @@ def test_numeric_and_list_timeouts_are_supported(settings, timeout, http_get):
     settings.GND_CACHE_CONFIG = None
     GNDClient().search('Zeolite')
     assert http_get.call_args.kwargs['timeout'] == (tuple(timeout) if isinstance(timeout, list) else timeout)
+
+
+def test_general_search_uses_configured_params(settings, http_get):
+    settings.GND_PARAMS = {'filter': '+(type:PlaceOrGeographicName)', 'size': 5}
+    GNDClient().search('Berlin')
+    assert http_get.call_args.kwargs['params'] == {
+        'q': 'Berlin',
+        'format': 'json',
+        'filter': '+(type:PlaceOrGeographicName)',
+        'size': 5,
+    }
+    assert settings.GND_PARAMS == {'filter': '+(type:PlaceOrGeographicName)', 'size': 5}
+
+
+def test_configured_params_keep_upstream_override_precedence(settings, http_get):
+    settings.GND_PARAMS = {'q': 'configured query', 'format': 'jsonl'}
+    GNDClient().search('typed query')
+    assert http_get.call_args.kwargs['params'] == {'q': 'configured query', 'format': 'jsonl'}
+
+
+def test_configured_filters_separate_cached_searches(settings, http_get):
+    settings.GND_PARAMS = {'filter': 'type:PlaceOrGeographicName'}
+    GNDClient().search('Berlin')
+    settings.GND_PARAMS = {'filter': 'type:CorporateBody'}
+    GNDClient().search('Berlin')
+    settings.GND_PARAMS = {'filter': 'type:PlaceOrGeographicName'}
+    GNDClient().search('Berlin')
+    assert http_get.call_count == 2
+
+
+def test_configured_search_params_do_not_affect_identifier_lookup(settings, http_get):
+    settings.GND_PARAMS = {'filter': 'type:PlaceOrGeographicName', 'q': 'Berlin'}
+    http_get.return_value = response(record())
+    GNDClient().get_record('2129905-5')
+    assert http_get.call_args.kwargs['params'] == {'format': 'json'}
